@@ -32,8 +32,8 @@ export default function App() {
       <Route path="/client/projects/new" element={<Protected role="CLIENT"><PostProjectPage /></Protected>} />
       <Route path="/admin/applications" element={<Protected role="ADMIN"><AdminApplicationsPage /></Protected>} />
       <Route path="/admin/catalog" element={<Protected role="ADMIN"><AdminCatalogPage /></Protected>} />
-      <Route path="/messages" element={<Protected><MessagesPage /></Protected>} />
-      <Route path="/messages/:id" element={<Protected><MessagesPage /></Protected>} />
+      <Route path="/messages" element={<Protected role={['CLIENT', 'FREELANCER']}><MessagesPage /></Protected>} />
+      <Route path="/messages/:id" element={<Protected role={['CLIENT', 'FREELANCER']}><MessagesPage /></Protected>} />
       <Route path="*" element={<Navigate to={user ? homeFor(user.role) : '/'} replace />} />
     </Routes>
   );

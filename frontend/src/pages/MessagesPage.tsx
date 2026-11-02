@@ -4,8 +4,12 @@ import { conversationsApi } from '../api/conversations';
 import Avatar from '../components/Avatar';
 import EmptyState from '../components/EmptyState';
 import Icon from '../components/Icon';
+import NewConversationForm from '../components/NewConversationForm';
 import { useAuth } from '../context/AuthContext';
 import { useRealtime } from '../context/RealtimeContext';
+import { useToast } from '../context/ToastContext';
+import { ApiError } from '../api/client';
+import { useContacts } from '../hooks/useContacts';
 import { clock, newId, timeAgo } from '../format';
 import { useLoad } from '../hooks/useLoad';
 import { displayName, useUsers } from '../hooks/useUsers';
@@ -22,7 +26,25 @@ export default function MessagesPage() {
   const { subscribe, refreshUnread } = useRealtime();
   const conversations = useLoad((signal) => conversationsApi.list(signal), []);
   const [filter, setFilter] = useState('');
+  const [starting, setStarting] = useState(false);
+  const navigate = useNavigate();
+  const { notify } = useToast();
+  const { contacts } = useContacts(user?.role);
   const me = user?.userId ?? '';
+
+  const startChat = async (contactId: string) => {
+    if (starting) return;
+    setStarting(true);
+    try {
+      const conversation = await conversationsApi.start(contactId);
+      await conversations.reload();
+      navigate(`/messages/${conversation.id}`);
+    } catch (err) {
+      notify(err instanceof ApiError ? err.message : 'Could not start the chat', 'error');
+    } finally {
+      setStarting(false);
+    }
+  };
 
   const list = conversations.data ?? [];
   const otherOf = (conversation: Conversation) => conversation.participantIds.find((pid) => pid !== me) ?? '';
@@ -72,6 +94,12 @@ export default function MessagesPage() {
       <aside className="chat-list">
         <div className="chat-list-head">
           <h1>Messages</h1>
+          <NewConversationForm
+            contacts={contacts}
+            label={user?.role === 'CLIENT' ? 'freelancer' : 'client'}
+            busy={starting}
+            onStart={startChat}
+          />
           <label className="search-field sm">
             <Icon name="search" size={16} />
             <input type="search" placeholder="Search people" value={filter} onChange={(event) => setFilter(event.target.value)} aria-label="Search conversations" />

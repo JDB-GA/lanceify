@@ -154,3 +154,10 @@ export interface ReadReceipt {
   readerId: string;
   readAt: string;
 }
+
+export interface Contact {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role: Role;
+}

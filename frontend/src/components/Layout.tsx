@@ -49,6 +49,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   if (!user) return <>{children}</>;
 
   const fullName = `${user.firstName} ${user.lastName}`;
+  const chat = user.role !== 'ADMIN';
   const submitSearch = (event: FormEvent) => {
     event.preventDefault();
     navigate(`/projects?q=${encodeURIComponent(search.trim())}`);
@@ -73,10 +74,12 @@ export default function Layout({ children }: { children: ReactNode }) {
             </form>
           )}
           <div className="topbar-actions">
-            <NavLink to="/messages" className="icon-button" aria-label={`Messages${unread ? `, ${unread} unread` : ''}`}>
-              <Icon name="chat" size={20} />
-              {unread > 0 && <span className="count-bubble">{unread > 99 ? '99+' : unread}</span>}
-            </NavLink>
+            {chat && (
+              <NavLink to="/messages" className="icon-button" aria-label={`Messages${unread ? `, ${unread} unread` : ''}`}>
+                <Icon name="chat" size={20} />
+                {unread > 0 && <span className="count-bubble">{unread > 99 ? '99+' : unread}</span>}
+              </NavLink>
+            )}
             <div className="menu" ref={menuRef}>
               <button className="user-chip" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
                 <Avatar name={fullName} seed={user.userId} size="sm" online={live} />
@@ -94,7 +97,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                   {NAV[user.role].map((item) => (
                     <Link key={item.to} to={item.to} role="menuitem"><Icon name={item.icon} />{item.label}</Link>
                   ))}
-                  <Link to="/messages" role="menuitem"><Icon name="chat" />Messages</Link>
+                  {chat && <Link to="/messages" role="menuitem"><Icon name="chat" />Messages</Link>}
                   <button role="menuitem" onClick={logout}><Icon name="logout" />Log out</button>
                 </div>
               )}
@@ -108,10 +111,12 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <Icon name={item.icon} size={16} />{item.label}
               </NavLink>
             ))}
-            <NavLink to="/messages" className="subnav-link">
-              <Icon name="chat" size={16} />Messages
-              {unread > 0 && <span className="pill-count">{unread}</span>}
-            </NavLink>
+            {chat && (
+              <NavLink to="/messages" className="subnav-link">
+                <Icon name="chat" size={16} />Messages
+                {unread > 0 && <span className="pill-count">{unread}</span>}
+              </NavLink>
+            )}
             <span className={live ? 'live-dot on' : 'live-dot'} title={live ? 'Live updates on' : 'Reconnecting…'}>
               {live ? 'Live' : 'Offline'}
             </span>

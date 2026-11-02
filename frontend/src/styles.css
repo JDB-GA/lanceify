@@ -430,6 +430,8 @@ fieldset.plain { display: block; }
 .chat-list { display: flex; flex-direction: column; border-right: 1px solid var(--line); min-height: 0; }
 .chat-list-head { display: grid; gap: 14px; padding: 20px; border-bottom: 1px solid var(--line); }
 .chat-list-head h1 { font-size: 24px; }
+.new-conversation { display: flex; gap: 8px; }
+.new-conversation select { height: 40px; padding: 0 12px; border-radius: 999px; font-size: 14px; }
 .chat-list ul { flex: 1; margin: 0; padding: 6px; list-style: none; overflow-y: auto; }
 .convo { display: flex; gap: 12px; padding: 12px; border-radius: 12px; color: var(--ink); }
 .convo:hover { background: var(--surface-2); text-decoration: none; color: var(--ink); }

@@ -86,6 +86,8 @@ Profile body, where `skillIds` come from `GET /api/skills`:
 | Method | Path                  | Access    | Purpose                                                   |
 | ------ | --------------------- | --------- | --------------------------------------------------------- |
 | GET    | `/api/users?ids=a,b`  | Logged in | Names and usernames for up to 100 user IDs                |
+| GET    | `/api/users/contacts/freelancers` | Client | Approved freelancers to message |
+| GET    | `/api/users/contacts/clients` | Freelancer | Clients to message |
 
 ## Projects
 
