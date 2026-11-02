@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+identity-url: ${IDENTITY_SERVICE_URL:http://localhost:8081}
+marketplace-url: ${MARKETPLACE_SERVICE_URL:http://localhost:8082}
+contract-url: ${CONTRACT_SERVICE_URL:http://localhost:8083}
+communication-url: ${COMMUNICATION_SERVICE_URL:http://localhost:8084}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: identity-service
+              uri: ${identity-url}
+              predicates:
+                - Path=/api/auth/**,/api/users/**,/api/freelancers/**,/api/admin/freelancer-applications/**
+            - id: marketplace-service
+              uri: ${marketplace-url}
+              predicates:
+                - Path=/api/skills/**,/api/categories/**,/api/projects/**,/api/proposals/**,/api/bookmarks/**
+            - id: contract-service
+              uri: ${contract-url}
+              predicates:
+                - Path=/api/contracts/**,/api/milestones/**,/api/wallets/**,/api/reviews/**,/api/simulations/**
+            - id: communication-service
+              uri: ${communication-url}
+              predicates:
+                - Path=/api/notifications/**,/api/conversations/**
