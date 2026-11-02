@@ -19,6 +19,7 @@ spring:
     gateway:
       server:
         webmvc:
+          trusted-proxies: ".*"
           routes:
             - id: identity-service
               uri: ${identity-url}
