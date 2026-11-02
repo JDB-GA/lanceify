@@ -22,6 +22,7 @@ docker compose up --build
 | [Setup](docs/SETUP.md) | Prerequisites, MongoDB Atlas and environment variables |
 | [Running](docs/RUNNING.md) | Docker, individual services and the frontend |
 | [Architecture](docs/ARCHITECTURE.md) | Services, ports, databases and project status |
+| [Database design](docs/ERD.md) | ERD, collections and data rules |
 | [API reference](docs/API.md) | Endpoints, statuses and error codes |
 | [Security](docs/SECURITY.md) | JWT format, roles and adding security to a service |
 | [Development](docs/DEVELOPMENT.md) | Testing, the approval flow and contributing |
