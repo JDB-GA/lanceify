@@ -36,6 +36,14 @@ public class ProjectClient {
         }
     }
 
+    public void assign(String projectId, String freelancerId) {
+        restClient.patch()
+                .uri("/api/projects/{id}/assign/{freelancerId}", projectId, freelancerId)
+                .header(HttpHeaders.AUTHORIZATION, callerToken())
+                .retrieve()
+                .toBodilessEntity();
+    }
+
     private String callerToken() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {

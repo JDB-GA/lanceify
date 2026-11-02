@@ -13,8 +13,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.ga.lanceify.proposal.client.ContractClient;
 import com.ga.lanceify.proposal.client.ProjectClient;
 import com.ga.lanceify.proposal.dto.ApplyRequest;
+import com.ga.lanceify.proposal.dto.ContractSummary;
 import com.ga.lanceify.proposal.dto.ProjectSummary;
 import com.ga.lanceify.proposal.exception.ConflictException;
 import com.ga.lanceify.proposal.exception.ResourceNotFoundException;
@@ -31,13 +33,15 @@ public class ProposalService {
 
     private final ProposalRepository proposalRepository;
     private final ProjectClient projectClient;
+    private final ContractClient contractClient;
     private final MongoTemplate mongoTemplate;
     private final Map<String, ReentrantLock> projectLocks = new ConcurrentHashMap<>();
 
     public ProposalService(ProposalRepository proposalRepository, ProjectClient projectClient,
-            MongoTemplate mongoTemplate) {
+            ContractClient contractClient, MongoTemplate mongoTemplate) {
         this.proposalRepository = proposalRepository;
         this.projectClient = projectClient;
+        this.contractClient = contractClient;
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -100,6 +104,12 @@ public class ProposalService {
         return proposalRepository.findByProjectIdAndClientIdOrderByCreatedAtDesc(projectId, clientId);
     }
 
+    public Proposal get(String proposalId, String userId, boolean admin) {
+        return proposalRepository.findById(proposalId)
+                .filter(found -> admin || userId.equals(found.getClientId()) || userId.equals(found.getFreelancerId()))
+                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+    }
+
     public Proposal accept(String clientId, String proposalId, Long expectedVersion) {
         Proposal proposal = findForClient(clientId, proposalId, expectedVersion);
         requirePending(proposal, "Only pending proposals can be accepted");
@@ -108,6 +118,17 @@ public class ProposalService {
         if (!clientId.equals(project.getClientId())) {
             throw new ResourceNotFoundException("Proposal not found");
         }
+        return hire(proposal, project);
+    }
+
+    public Proposal approveAsAdmin(String proposalId) {
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+        requirePending(proposal, "Only pending proposals can be approved");
+        return hire(proposal, projectClient.getProject(proposal.getProjectId()));
+    }
+
+    private Proposal hire(Proposal proposal, ProjectSummary project) {
         if (!project.isOpen()) {
             throw new ConflictException("This project is no longer open");
         }
@@ -122,6 +143,22 @@ public class ProposalService {
             throw new ConflictException("Another proposal has already been accepted for this project");
         }
 
+        ContractSummary contract;
+        try {
+            contract = contractClient.create(accepted.getId());
+        } catch (RuntimeException e) {
+            revert(accepted);
+            throw e;
+        }
+
+        try {
+            projectClient.assign(accepted.getProjectId(), accepted.getFreelancerId());
+        } catch (RuntimeException e) {
+            contractClient.cancelWithoutProject(contract.id());
+            revert(accepted);
+            throw new ConflictException("This project could not be assigned");
+        }
+
         Query others = Query.query(Criteria.where("projectId").is(accepted.getProjectId())
                 .and("status").is(ProposalStatus.PENDING)
                 .and("_id").ne(accepted.getId()));
@@ -132,6 +169,12 @@ public class ProposalService {
                 .inc("version", 1);
         mongoTemplate.updateMulti(others, decline, Proposal.class);
         return accepted;
+    }
+
+    private void revert(Proposal proposal) {
+        proposal.setStatus(ProposalStatus.PENDING);
+        proposal.setDecidedAt(null);
+        proposalRepository.save(proposal);
     }
 
     public Proposal reject(String clientId, String proposalId, Long expectedVersion) {

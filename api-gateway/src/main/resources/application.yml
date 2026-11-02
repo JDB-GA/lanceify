@@ -28,7 +28,7 @@ spring:
             - id: proposal-service
               uri: ${proposal-url}
               predicates:
-                - Path=/api/proposals/**,/api/projects/*/proposals
+                - Path=/api/proposals/**,/api/projects/*/proposals,/api/admin/proposals/**
             - id: project-service
               uri: ${project-url}
               predicates:
@@ -40,7 +40,7 @@ spring:
             - id: contract-service
               uri: ${contract-url}
               predicates:
-                - Path=/api/contracts/**,/api/milestones/**,/api/wallets/**,/api/reviews/**,/api/simulations/**
+                - Path=/api/admin/contracts/**,/api/contracts/**,/api/milestones/**,/api/wallets/**,/api/reviews/**,/api/simulations/**
             - id: communication-service
               uri: ${communication-url}
               predicates:

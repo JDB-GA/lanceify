@@ -38,6 +38,9 @@ services:
   contract-service:
     build: ./contract-service
     env_file: .env
+    environment:
+      PROPOSAL_SERVICE_URL: http://proposal-service:8086
+      PROJECT_SERVICE_URL: http://project-service:8087
 
   communication-service:
     build: ./communication-service
@@ -52,6 +55,7 @@ services:
     env_file: .env
     environment:
       PROJECT_SERVICE_URL: http://project-service:8087
+      CONTRACT_SERVICE_URL: http://contract-service:8083
 
   project-service:
     build: ./project-service

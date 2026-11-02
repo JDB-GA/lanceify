@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import com.ga.lanceify.proposal.client.ContractClient;
 import com.ga.lanceify.proposal.client.ProjectClient;
 import com.ga.lanceify.proposal.dto.ApplyRequest;
 import com.ga.lanceify.proposal.dto.ProjectSummary;
@@ -49,7 +50,7 @@ class ProposalLimitConcurrencyTests {
 		ProjectClient projects = mock(ProjectClient.class);
 		when(projects.getProject("p1")).thenReturn(project);
 
-		ProposalService service = new ProposalService(repository, projects, mock(MongoTemplate.class));
+		ProposalService service = new ProposalService(repository, projects, mock(ContractClient.class), mock(MongoTemplate.class));
 		ApplyRequest request = new ApplyRequest("I can build this for you this month.", BigDecimal.TEN, 5);
 
 		ExecutorService pool = Executors.newFixedThreadPool(10);
