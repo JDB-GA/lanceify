@@ -89,6 +89,18 @@ Profile body, where `skillIds` come from `GET /api/skills`:
 | GET    | `/api/proposals/me`                 | Freelancer | List my proposals       |
 | PUT    | `/api/proposals/{id}/withdraw`      | Freelancer | Withdraw a proposal     |
 
+## Messaging
+
+| Method | Path | Access | Purpose |
+| --- | --- | --- | --- |
+| GET | `/api/users/contacts/freelancers` | Client | List approved freelancers to message |
+| GET | `/api/users/contacts/clients` | Freelancer | List clients to message |
+| POST | `/api/conversations` | Logged in | Start or reopen a chat with `{ "recipientId": "USER_ID" }` |
+| GET | `/api/conversations` | Logged in | List my conversations |
+| GET | `/api/conversations/{id}/messages` | Participant | List messages and mark them read |
+| POST | `/api/conversations/{id}/messages` | Participant | Send `{ "content": "..." }`, up to 3000 characters |
+| GET | `/api/conversations/{id}/stream` | Participant | Receive new messages live with server-sent events |
+
 ## Status codes
 
 | Code | Meaning                                                            |
