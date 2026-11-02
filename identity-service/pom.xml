@@ -54,7 +54,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-		<!-- Uncomment when authentication is ready
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -76,7 +75,6 @@
 			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
-		-->
 	</dependencies>
 
 	<build>
