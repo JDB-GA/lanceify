@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { Role } from '../types';
+import { homeFor } from '../routes/paths';
 import Brand from './Brand';
 
 const ROLE_LABELS: Record<Role, string> = { ADMIN: 'Admin', CLIENT: 'Client', FREELANCER: 'Freelancer' };
@@ -13,6 +15,12 @@ export default function Layout({ children }: { children: ReactNode }) {
     <>
       <header className="topbar">
         <Brand />
+        {user && user.role !== 'ADMIN' && (
+          <nav className="topbar-nav" aria-label="Main">
+            <NavLink to={homeFor(user.role)} end>Home</NavLink>
+            <NavLink to="/messages">Messages</NavLink>
+          </nav>
+        )}
         {user && (
           <div className="topbar-user">
             <div className="user-chip">

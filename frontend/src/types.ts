@@ -61,3 +61,30 @@ export interface Skill {
   name: string;
   active: boolean;
 }
+
+export interface Contact {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role: Role;
+}
+
+export interface Conversation {
+  id: string;
+  participantIds: string[];
+  projectId: string | null;
+  lastMessage: string | null;
+  lastMessageAt: string | null;
+  createdAt: string;
+  unreadCount: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  recipientId: string;
+  content: string;
+  read: boolean;
+  createdAt: string;
+}
