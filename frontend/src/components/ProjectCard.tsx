@@ -23,7 +23,7 @@ export default function ProjectCard({ project, skillNames, applied }: Props) {
       <p className="clamp">{project.description}</p>
       <SkillTags ids={project.skillIds} names={skillNames} limit={4} />
       <div className="project-card-foot">
-        <span className="price"><small>Budget</small>{budget(project.budgetMin, project.budgetMax)}</span>
+        <span className="price"><small>Budget</small>{budget(project.budget)}</span>
         {project.deadline && (
           <span className="muted small"><Icon name="clock" size={14} /> Due {new Date(project.deadline).toLocaleDateString()}</span>
         )}

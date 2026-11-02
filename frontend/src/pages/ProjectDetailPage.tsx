@@ -52,7 +52,7 @@ export default function ProjectDetailPage() {
         </div>
         <h1 className="detail-title">{data.title}</h1>
         <div className="fact-row">
-          <div><small>Budget</small><strong>{budget(data.budgetMin, data.budgetMax)}</strong></div>
+          <div><small>Budget</small><strong>{budget(data.budget)}</strong></div>
           <div><small>Deadline</small><strong>{shortDate(data.deadline)}</strong></div>
           <div><small>Skills</small><strong>{data.skillIds.length}</strong></div>
         </div>
@@ -145,7 +145,7 @@ function ApplyPanel({ project }: { project: Project }) {
   return (
     <form className="panel apply-panel" onSubmit={submit}>
       <h2>Send a proposal</h2>
-      <p className="muted small">Client budget: <b>{budget(project.budgetMin, project.budgetMax)}</b></p>
+      <p className="muted small">Client budget: <b>{budget(project.budget)}</b></p>
       <ErrorMessage error={error} />
       <div className="row">
         <label>Your bid

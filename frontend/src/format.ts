@@ -1,12 +1,7 @@
 export const money = (value: number | null | undefined) =>
   value == null ? '—' : `$${Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
-export const budget = (min: number | null, max: number | null) => {
-  if (min != null && max != null && min !== max) return `${money(min)} – ${money(max)}`;
-  if (max != null) return money(max);
-  if (min != null) return `From ${money(min)}`;
-  return 'Open budget';
-};
+export const budget = (value: number | null) => (value == null ? 'Open budget' : money(value));
 
 export const timeAgo = (iso: string | null | undefined) => {
   if (!iso) return '';

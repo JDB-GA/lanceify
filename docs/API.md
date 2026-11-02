@@ -87,16 +87,19 @@ Profile body, where `skillIds` come from `GET /api/skills`:
 | ------ | --------------------- | --------- | --------------------------------------------------------- |
 | GET    | `/api/users?ids=a,b`  | Logged in | Names and usernames for up to 100 user IDs                |
 
-## Projects (project service, expected by the frontend)
+## Projects
 
-The frontend calls these from `frontend/src/api/projects.ts`. A project needs at least `id`, `clientId`, `title` and `status` (`OPEN` accepts proposals).
-
-| Method | Path                    | Access     | Purpose                                                      |
-| ------ | ----------------------- | ---------- | ------------------------------------------------------------ |
-| GET    | `/api/projects`         | Logged in  | Browse; supports `search`, `skillId`, `status`; list or page |
-| GET    | `/api/projects/mine`    | Client     | My projects                                                  |
-| GET    | `/api/projects/{id}`    | Logged in  | One project                                                  |
-| POST   | `/api/projects`         | Client     | Post a project                                               |
+| Method | Path                                        | Access       | Purpose                                              |
+| ------ | ------------------------------------------- | ------------ | ---------------------------------------------------- |
+| POST   | `/api/projects`                             | Client       | Post a project                                       |
+| GET    | `/api/projects`                             | Logged in    | Open projects; filter with `categoryId` or `skillIds` |
+| GET    | `/api/projects/my`                          | Client       | My projects                                          |
+| GET    | `/api/projects/assigned`                    | Freelancer   | Projects I was hired for                             |
+| GET    | `/api/projects/{id}`                        | Logged in    | One project                                          |
+| PUT    | `/api/projects/{id}`                        | Client       | Edit while `OPEN`                                    |
+| PATCH  | `/api/projects/{id}/status`                 | Client       | Change status with `{ "status" }`                    |
+| PATCH  | `/api/projects/{id}/assign/{freelancerId}`  | Client       | Assign a freelancer                                  |
+| DELETE | `/api/projects/{id}`                        | Client, Admin | Delete                                              |
 
 Post body:
 
@@ -104,10 +107,10 @@ Post body:
 {
   "title": "Landing page for my bakery",
   "description": "What should be delivered...",
-  "budgetMin": 300,
-  "budgetMax": 800,
-  "skillIds": ["SKILL_ID"],
-  "deadline": "2026-12-01"
+  "budget": 800,
+  "deadline": "2026-12-01",
+  "categoryId": "CATEGORY_ID",
+  "requiredSkillIds": ["SKILL_ID"]
 }
 ```
 

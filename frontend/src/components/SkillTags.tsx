@@ -9,7 +9,7 @@ export default function SkillTags({ ids, names, limit = 6 }: Props) {
   const shown = ids.slice(0, limit);
   return (
     <span className="tag-list">
-      {shown.map((id) => <span key={id} className="tag">{names.get(id) ?? 'Skill'}</span>)}
+      {shown.map((id) => <span key={id} className="tag">{names.get(id) ?? 'Unavailable skill'}</span>)}
       {ids.length > limit && <span className="tag more">+{ids.length - limit}</span>}
     </span>
   );

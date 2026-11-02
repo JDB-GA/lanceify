@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { adminApi } from '../api/admin';
 import { ApiError } from '../api/client';
 import ApplicationCard from '../components/ApplicationCard';
@@ -19,8 +19,12 @@ export default function AdminApplicationsPage() {
   const [status, setStatus] = useState<ApprovalStatus>('PENDING');
   const [page, setPage] = useState(0);
   const [busy, setBusy] = useState(false);
-  const { names } = useSkills();
+  const { names, reload: reloadSkills } = useSkills();
   const { data, error, loading, reload } = useLoad((signal) => adminApi.list(status, page, PAGE_SIZE, signal), [status, page]);
+
+  useEffect(() => {
+    reloadSkills();
+  }, [status, page, reloadSkills]);
 
   const chooseFilter = (next: ApprovalStatus) => {
     setStatus(next);

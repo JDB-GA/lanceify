@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { catalogApi } from '../api/catalog';
 import type { Skill } from '../types';
 import { useLoad } from './useLoad';
@@ -13,9 +13,9 @@ export function useSkills() {
   }, []);
   const skills = data ?? [];
   const names = useMemo(() => new Map(skills.map((skill) => [skill.id, skill.name])), [skills]);
-  const refresh = () => {
+  const refresh = useCallback(() => {
     cached = null;
     return reload();
-  };
-  return { skills, names, loading, error, refresh };
+  }, [reload]);
+  return { skills, names, loading, error, reload: refresh };
 }

@@ -84,10 +84,11 @@ export interface UserSummary {
 export interface Project {
   id: string;
   clientId: string;
+  assignedFreelancerId: string | null;
   title: string;
   description: string;
-  budgetMin: number | null;
-  budgetMax: number | null;
+  budget: number | null;
+  categoryId: string | null;
   skillIds: string[];
   deadline: string | null;
   status: string;
@@ -97,10 +98,10 @@ export interface Project {
 export interface ProjectRequest {
   title: string;
   description: string;
-  budgetMin: number | null;
-  budgetMax: number | null;
-  skillIds: string[];
-  deadline: string | null;
+  budget: number;
+  deadline: string;
+  categoryId: string;
+  requiredSkillIds: string[];
 }
 
 export interface ApplyRequest {
