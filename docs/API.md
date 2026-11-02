@@ -116,6 +116,20 @@ Post body:
 }
 ```
 
+## Projects
+
+| Method | Path | Access | Purpose |
+| --- | --- | --- | --- |
+| POST | `/api/projects` | Client | Post a project |
+| GET | `/api/projects` | Logged in | Browse open projects; filter with `categoryId`, `skillIds` |
+| GET | `/api/projects/my` | Client | List my projects |
+| GET | `/api/projects/assigned` | Freelancer | List projects I was hired for |
+| GET | `/api/projects/{id}` | Logged in | View a project |
+| PUT | `/api/projects/{id}` | Client | Edit my open project |
+| PATCH | `/api/projects/{id}/status` | Client | Change my project's status |
+| PATCH | `/api/projects/{id}/assign/{freelancerId}` | Client | Hire a freelancer |
+| DELETE | `/api/projects/{id}` | Client or admin | Delete a project |
+
 ## Proposals
 
 | Method | Path                                 | Access     | Purpose                                                        |
@@ -153,6 +167,30 @@ Post body:
 | A message is retried after a network error | Unique `senderId` + `clientMessageId`; the retry returns the original |
 | Messages saved out of order | `lastMessage` only moves forward in time, using an atomic update |
 | Two registrations with the same email | Unique index; the second gets 409 with the right message |
+
+## Contracts
+
+A contract is created automatically when a client accepts a proposal, or an admin approves one. The project is assigned to the freelancer at the same time, and the other pending proposals are rejected.
+
+| Method | Path | Access | Purpose |
+| --- | --- | --- | --- |
+| GET | `/api/contracts/my` | Client or freelancer | List my contracts |
+| GET | `/api/contracts/{id}` | Participant or admin | View a contract |
+| PUT | `/api/contracts/{id}/complete` | Client | Complete a contract and its project |
+| PUT | `/api/contracts/{id}/cancel` | Client or admin | Cancel a contract and its project |
+| GET | `/api/admin/contracts` | Admin | List all contracts |
+
+A freelancer can have at most 3 active contracts. A project can have at most 5 active proposals; withdrawn and rejected ones don't count. Only approved freelancers can send proposals.
+
+## Administration
+
+| Method | Path | Access | Purpose |
+| --- | --- | --- | --- |
+| PUT | `/api/proposals/{id}/accept` | Client | Accept a proposal on my project |
+| PUT | `/api/admin/proposals/{id}/approve` | Admin | Approve any pending proposal |
+| GET | `/api/admin/users` | Admin | List users |
+| PUT | `/api/admin/users/{id}/ban` | Admin | Ban a user |
+| PUT | `/api/admin/users/{id}/unban` | Admin | Unban a user |
 
 ## Status codes
 

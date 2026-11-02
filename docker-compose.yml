@@ -9,7 +9,7 @@ services:
   api-gateway:
     build: ./api-gateway
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       IDENTITY_SERVICE_URL: http://identity-service:8081
       MARKETPLACE_SERVICE_URL: http://marketplace-service:8082
@@ -17,6 +17,7 @@ services:
       COMMUNICATION_SERVICE_URL: http://communication-service:8084
       CATALOG_SERVICE_URL: http://catalog-service:8085
       PROPOSAL_SERVICE_URL: http://proposal-service:8086
+      PROJECT_SERVICE_URL: http://project-service:8087
     depends_on:
       - identity-service
       - marketplace-service
@@ -24,6 +25,7 @@ services:
       - communication-service
       - catalog-service
       - proposal-service
+      - project-service
 
   identity-service:
     build: ./identity-service
@@ -36,6 +38,9 @@ services:
   contract-service:
     build: ./contract-service
     env_file: .env
+    environment:
+      PROPOSAL_SERVICE_URL: http://proposal-service:8086
+      PROJECT_SERVICE_URL: http://project-service:8087
 
   communication-service:
     build: ./communication-service
@@ -49,4 +54,21 @@ services:
     build: ./proposal-service
     env_file: .env
     environment:
-      PROJECT_SERVICE_URL: http://marketplace-service:8082
+      PROJECT_SERVICE_URL: http://project-service:8087
+      CONTRACT_SERVICE_URL: http://contract-service:8083
+      IDENTITY_SERVICE_URL: http://identity-service:8081
+
+  project-service:
+    build: ./project-service
+    env_file: .env
+    environment:
+      CATALOG_SERVICE_URL: http://catalog-service:8085
+
+  seed-service:
+    build: ./seed-service
+    env_file: .env
+    environment:
+      SEED_RESET: ${SEED_RESET:-false}
+    restart: "no"
+    depends_on:
+      - catalog-service

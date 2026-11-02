@@ -103,9 +103,11 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public ProjectResponse changeStatus(String id, ProjectStatus newStatus, String clientId) {
+    public ProjectResponse changeStatus(String id, ProjectStatus newStatus, String clientId, boolean admin) {
         Project project = findProject(id);
-        checkOwner(project, clientId);
+        if (!admin) {
+            checkOwner(project, clientId);
+        }
 
         // Allowed transitions only
         boolean valid = switch (project.getStatus()) {
@@ -122,12 +124,14 @@ public class ProjectService {
     }
 
     // Called when the client accepts a proposal; locked so only one freelancer can be assigned
-    public ProjectResponse assignFreelancer(String projectId, String freelancerId, String clientId) {
+    public ProjectResponse assignFreelancer(String projectId, String freelancerId, String clientId, boolean admin) {
         ReentrantLock lock = locks.computeIfAbsent(projectId, k -> new ReentrantLock());
         lock.lock();
         try {
             Project project = findProject(projectId);
-            checkOwner(project, clientId);
+            if (!admin) {
+                checkOwner(project, clientId);
+            }
 
             if (project.getStatus() != ProjectStatus.OPEN) {
                 throw new InvalidStatusException("Project is no longer open");

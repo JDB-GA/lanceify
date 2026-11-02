@@ -11,7 +11,8 @@ The frontend calls the API gateway, which routes each request to a service. Each
 | `marketplace-service`   | 8082                                | `marketplace_db`   | Projects, proposals, bookmarks           | Token checks only; no endpoints yet                   |
 | `contract-service`      | 8083                                | `contract_db`      | Contracts, milestones, wallets, reviews  | Token checks only; no endpoints yet                   |
 | `communication-service` | 8084                                | `communication_db` | Notifications, chat                      | Conversations, messages, live streams                 |
-| `proposal-service`      | 8086                                | `proposal_db`      | Proposals on projects                    | Apply, withdraw, hire, decline                        |
+| `proposal-service` | 8086 | `proposal_db` | Freelancer proposals | Working |
+| `project-service` | 8087 | `project_db` | Client projects | Working |
 
 ## Gateway routes
 
@@ -20,7 +21,8 @@ The frontend calls the API gateway, which routes each request to a service. Each
 | `/api/auth/**`, `/api/users/**`, `/api/freelancers/**`, `/api/admin/freelancer-applications/**`        | `identity-service`      |
 | `/api/skills/**`, `/api/categories/**`                                                                 | `catalog-service`       |
 | `/api/proposals/**`, `/api/projects/*/proposals`                                                       | `proposal-service`      |
-| `/api/projects/**`, `/api/bookmarks/**`                                                                | `marketplace-service`   |
+| `/api/projects/**` | `project-service` |
+| `/api/bookmarks/**` | `marketplace-service` |
 | `/api/contracts/**`, `/api/milestones/**`, `/api/wallets/**`, `/api/reviews/**`, `/api/simulations/**` | `contract-service`      |
 | `/api/notifications/**`, `/api/conversations/**`                                                       | `communication-service` |
 

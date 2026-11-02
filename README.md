@@ -25,6 +25,7 @@ docker compose up --build
 | [API reference](docs/API.md) | Endpoints, statuses and error codes |
 | [Security](docs/SECURITY.md) | JWT format, roles and adding security to a service |
 | [Development](docs/DEVELOPMENT.md) | Testing, the approval flow and contributing |
+| [Demo data](docs/DEMO_DATA.md) | Test accounts and every seeded scenario |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | Common problems and fixes |
 
 ## Technologies

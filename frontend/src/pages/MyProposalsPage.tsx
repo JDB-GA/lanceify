@@ -6,6 +6,7 @@ import EmptyState from '../components/EmptyState';
 import Icon from '../components/Icon';
 import MessageButton from '../components/MessageButton';
 import StatusBadge from '../components/StatusBadge';
+import { useConfirm } from '../context/ConfirmContext';
 import { useToast } from '../context/ToastContext';
 import { money, timeAgo } from '../format';
 import { useLoad } from '../hooks/useLoad';
@@ -16,12 +17,20 @@ const LABELS: Record<string, string> = { ALL: 'All', PENDING: 'Pending', ACCEPTE
 
 export default function MyProposalsPage() {
   const { notify } = useToast();
+  const confirm = useConfirm();
   const [filter, setFilter] = useState<ProposalStatus | 'ALL'>('ALL');
   const [busyId, setBusyId] = useState<string | null>(null);
   const { data, setData, error, loading, reload } = useLoad((signal) => proposalsApi.mine(signal), []);
 
   const withdraw = async (proposal: Proposal) => {
-    if (busyId || !window.confirm('Withdraw this proposal? The client will no longer see it.')) return;
+    if (busyId) return;
+    const confirmed = await confirm({
+      title: 'Withdraw this proposal?',
+      message: 'The client will no longer see it.',
+      confirmLabel: 'Withdraw',
+      danger: true,
+    });
+    if (!confirmed) return;
     setBusyId(proposal.id);
     try {
       const updated = await proposalsApi.withdraw(proposal.id);

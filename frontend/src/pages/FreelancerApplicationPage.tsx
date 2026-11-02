@@ -1,6 +1,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { ApiError } from '../api/client';
 import { freelancerApi } from '../api/freelancer';
+import { useConfirm } from '../context/ConfirmContext';
 import ErrorMessage from '../components/ErrorMessage';
 import SkillPicker from '../components/SkillPicker';
 import StatusBadge from '../components/StatusBadge';
@@ -45,6 +46,7 @@ const toRequest = (form: ProfileForm): FreelancerProfileRequest => ({
 });
 
 export default function FreelancerApplicationPage() {
+  const confirm = useConfirm();
   const [profile, setProfile] = useState<FreelancerProfile | null>(null);
   const [form, setForm] = useState<ProfileForm>(EMPTY_FORM);
   const [loading, setLoading] = useState(true);
@@ -87,8 +89,14 @@ export default function FreelancerApplicationPage() {
       show(await freelancerApi.submit());
     }, 'Application submitted to the admin.');
 
-  const withdraw = () => {
-    if (!window.confirm('Withdraw and delete your application?')) return;
+  const withdraw = async () => {
+    const confirmed = await confirm({
+      title: 'Withdraw your application?',
+      message: 'Your application will be deleted.',
+      confirmLabel: 'Withdraw',
+      danger: true,
+    });
+    if (!confirmed) return;
     perform(async () => {
       await freelancerApi.withdraw();
       show(null);

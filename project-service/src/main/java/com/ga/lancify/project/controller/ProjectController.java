@@ -70,34 +70,36 @@ public class ProjectController {
 
 
     // Owner changes the status (cancel / complete)
-    @PreAuthorize("hasRole('CLIENT')")
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<ProjectResponse> changeStatus(@PathVariable String id,
                                                         @Valid @RequestBody ProjectStatusRequest request,
                                                         Authentication auth) {
-        return ResponseEntity.ok(projectService.changeStatus(id, request.getStatus(), getUserId(auth)));
+        return ResponseEntity.ok(projectService.changeStatus(id, request.getStatus(), getUserId(auth), isAdmin(auth)));
     }
 
     // Owner hires a freelancer (locked, so only one can be assigned)
-    @PreAuthorize("hasRole('CLIENT')")
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     @PatchMapping("/{id}/assign/{freelancerId}")
     public ResponseEntity<ProjectResponse> assign(@PathVariable String id,
                                                   @PathVariable String freelancerId,
                                                   Authentication auth) {
-        return ResponseEntity.ok(projectService.assignFreelancer(id, freelancerId, getUserId(auth)));
+        return ResponseEntity.ok(projectService.assignFreelancer(id, freelancerId, getUserId(auth), isAdmin(auth)));
     }
 
     // Owner (while OPEN) or admin deletes the project
     @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id, Authentication auth) {
-        boolean isAdmin = auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        projectService.delete(id, getUserId(auth), isAdmin);
+        projectService.delete(id, getUserId(auth), isAdmin(auth));
         return ResponseEntity.noContent().build();
     }
 
+    private boolean isAdmin(Authentication auth) {
+        return auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
     private String getUserId(Authentication auth) {
-        return (String) auth.getDetails();
+        return auth.getName();
     }
 }

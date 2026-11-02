@@ -14,5 +14,7 @@
 		<module>communication-service</module>
 		<module>catalog-service</module>
 		<module>proposal-service</module>
+		<module>project-service</module>
+		<module>seed-service</module>
 	</modules>
 </project>
