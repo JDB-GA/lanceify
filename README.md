@@ -33,6 +33,7 @@ docker compose up --build
 | --- | --- |
 | Backend | Java 17, Spring Boot, Spring Cloud Gateway |
 | Frontend | React, TypeScript, Vite |
+| Live chat | Server-sent events |
 | Security | Spring Security, JWT |
 | Database | MongoDB Atlas |
 | DevOps | Docker, Docker Compose |

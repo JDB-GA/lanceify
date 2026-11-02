@@ -2,6 +2,8 @@ package com.ga.lanceify.communication.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -27,6 +29,11 @@ public class SseNotificationService {
 
     private final Map<String, List<SseEmitter>> conversationEmitters = new ConcurrentHashMap<>();
     private final Map<String, List<SseEmitter>> userEmitters = new ConcurrentHashMap<>();
+    private final TaskExecutor sseExecutor;
+
+    public SseNotificationService(@Qualifier("sseExecutor") TaskExecutor sseExecutor) {
+        this.sseExecutor = sseExecutor;
+    }
 
     public SseEmitter subscribeConversation(String conversationId, String userId) {
         log.debug("User {} subscribed to conversation {}", userId, conversationId);
@@ -39,17 +46,20 @@ public class SseNotificationService {
     }
 
     public void publishToConversation(String conversationId, String event, Object payload) {
-        send(conversationEmitters, conversationId, () -> SseEmitter.event().name(event).data(payload));
+        sseExecutor.execute(() -> send(conversationEmitters, conversationId, () -> SseEmitter.event().name(event).data(payload)));
     }
 
     public void publishToUsers(Collection<String> userIds, String event, Object payload) {
-        userIds.forEach(userId -> send(userEmitters, userId, () -> SseEmitter.event().name(event).data(payload)));
+        List<String> recipients = List.copyOf(userIds);
+        sseExecutor.execute(() -> recipients.forEach(userId -> send(userEmitters, userId, () -> SseEmitter.event().name(event).data(payload))));
     }
 
     @Scheduled(fixedRate = 25_000)
     public void heartbeat() {
-        conversationEmitters.keySet().forEach(key -> send(conversationEmitters, key, () -> SseEmitter.event().comment("ping")));
-        userEmitters.keySet().forEach(key -> send(userEmitters, key, () -> SseEmitter.event().comment("ping")));
+        sseExecutor.execute(() -> {
+            conversationEmitters.keySet().forEach(key -> send(conversationEmitters, key, () -> SseEmitter.event().comment("ping")));
+            userEmitters.keySet().forEach(key -> send(userEmitters, key, () -> SseEmitter.event().comment("ping")));
+        });
     }
 
     private SseEmitter register(Map<String, List<SseEmitter>> registry, String key) {

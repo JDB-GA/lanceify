@@ -26,6 +26,14 @@ The frontend calls the API gateway, which routes each request to a service. Each
 
 In Docker Compose, only the frontend and the gateway publish ports.
 
+## Live chat
+
+Chat updates reach the browser over server-sent events. When you open the messages page, the browser keeps a connection open to `communication-service`, and new messages and read receipts arrive on it as they happen.
+
+Open connections don't hold a thread each, so lots of idle tabs cost very little. The work happens when something is sent: the service writes the event to every open tab for that thread or user. That job runs on a small pool of `sse-` threads (4 to 8), so the person who sent the message gets their response straight away instead of waiting on everyone else's connection. If one tab is slow or has gone away, it only holds up that pool, not the chat request. Every 25 seconds the pool also sends a small ping so proxies don't close quiet connections.
+
+If the pool ever falls far behind, the request that sent the message delivers its own events. That slows the sender down a little rather than dropping messages.
+
 ## Frontend structure
 
 | Folder           | Contents                                   |
