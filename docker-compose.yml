@@ -4,17 +4,19 @@ services:
     ports:
       - "8080:8080"
     environment:
-      IDENTITY_SERVICE_URL: http://identity-service:8085
+      IDENTITY_SERVICE_URL: http://identity-service:8081
       MARKETPLACE_SERVICE_URL: http://marketplace-service:8082
       CONTRACT_SERVICE_URL: http://contract-service:8083
       COMMUNICATION_SERVICE_URL: http://communication-service:8084
       CATALOG_SERVICE_URL: http://catalog-service:8085
+      PROPOSAL_SERVICE_URL: http://proposal-service:8086
     depends_on:
       - identity-service
       - marketplace-service
       - contract-service
       - communication-service
       - catalog-service
+      - proposal-service
 
   identity-service:
     build: ./identity-service
@@ -35,3 +37,9 @@ services:
   catalog-service:
     build: ./catalog-service
     env_file: .env
+
+  proposal-service:
+    build: ./proposal-service
+    env_file: .env
+    environment:
+      PROJECT_SERVICE_URL: http://marketplace-service:8082
