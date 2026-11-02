@@ -58,7 +58,6 @@ class FreelancerApplicationSecurityTests {
 	@MockitoBean
 	private UserRepository users;
 
-	// the JWT filter loads the user by id: a1 is ADMIN, c1 is CLIENT, b1 is banned, the rest are FREELANCER
 	@BeforeEach
 	void stubUsers() {
 		when(users.findById(any())).thenAnswer(call -> {

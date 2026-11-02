@@ -25,11 +25,6 @@ public class SkillCategoryController {
         this.skillCategoryService = skillCategoryService;
     }
 
-    // ==========================================
-    // SKILLS ENDPOINTS
-    // ==========================================
-
-    // GET /api/skills or GET /api/skills?categoryId={id}
     @GetMapping("/skills")
     public ResponseEntity<List<SkillResponse>> getActiveSkills(
             @RequestParam(required = false) String categoryId) {
@@ -37,7 +32,6 @@ public class SkillCategoryController {
         return ResponseEntity.ok(skills);
     }
 
-    // POST /api/skills (Admin)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/skills")
     public ResponseEntity<SkillResponse> createSkill(
@@ -46,7 +40,6 @@ public class SkillCategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSkill);
     }
 
-    // PUT /api/skills/{id} (Admin)
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/skills/{id}")
     public ResponseEntity<SkillResponse> updateSkill(
@@ -56,7 +49,6 @@ public class SkillCategoryController {
         return ResponseEntity.ok(updatedSkill);
     }
 
-    // DELETE /api/skills/{id} (Admin - Soft Deactivation)
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/skills/{id}")
     public ResponseEntity<Void> deactivateSkill(@PathVariable String id) {
@@ -64,18 +56,12 @@ public class SkillCategoryController {
         return ResponseEntity.noContent().build();
     }
 
-    // ==========================================
-    // CATEGORIES ENDPOINTS
-    // ==========================================
-
-    // GET /api/categories
     @GetMapping("/categories")
     public ResponseEntity<List<CategoryResponse>> getActiveCategories() {
         List<CategoryResponse> categories = skillCategoryService.getActiveCategories();
         return ResponseEntity.ok(categories);
     }
 
-    // POST /api/categories (Admin)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/categories")
     public ResponseEntity<CategoryResponse> createCategory(
@@ -84,7 +70,6 @@ public class SkillCategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
 
-    // PUT /api/categories/{id} (Admin)
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/categories/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(
@@ -94,7 +79,6 @@ public class SkillCategoryController {
         return ResponseEntity.ok(updatedCategory);
     }
 
-    // DELETE /api/categories/{id} (Admin - Soft Deactivation)
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/categories/{id}")
     public ResponseEntity<Void> deactivateCategory(@PathVariable String id) {
@@ -102,7 +86,6 @@ public class SkillCategoryController {
         return ResponseEntity.noContent().build();
     }
 
-    // PUT /api/categories/{id}/skills (Admin - Replace Skills Assigned to Category)
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/categories/{id}/skills")
     public ResponseEntity<CategoryResponse> replaceCategorySkills(

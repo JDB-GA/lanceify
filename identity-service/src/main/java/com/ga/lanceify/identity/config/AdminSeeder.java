@@ -9,10 +9,6 @@ import org.springframework.util.StringUtils;
 import com.ga.lanceify.identity.model.User;
 import com.ga.lanceify.identity.repository.UserRepository;
 
-/**
- * Admins cannot register publicly, so one is created at startup
- * from ADMIN_EMAIL and ADMIN_PASSWORD in .env. Skipped if they are not set.
- */
 @Component
 public class AdminSeeder implements CommandLineRunner {
 

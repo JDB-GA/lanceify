@@ -4,20 +4,20 @@
 
 ## Token format
 
-| Part | Value |
-| --- | --- |
-| Algorithm | HS256 |
-| `sub` | The user's id |
-| `role` | `ADMIN`, `CLIENT` or `FREELANCER`, with no `ROLE_` prefix |
-| `exp` | 24 hours after login |
+| Part      | Value                                                     |
+| --------- | --------------------------------------------------------- |
+| Algorithm | HS256                                                     |
+| `sub`     | The user's id                                             |
+| `role`    | `ADMIN`, `CLIENT` or `FREELANCER`, with no `ROLE_` prefix |
+| `exp`     | 24 hours after login                                      |
 
 ## Roles
 
-| Role | How it is created |
-| --- | --- |
-| `CLIENT` | Public registration |
+| Role         | How it is created                                            |
+| ------------ | ------------------------------------------------------------ |
+| `CLIENT`     | Public registration                                          |
 | `FREELANCER` | Public registration; an admin must approve their application |
-| `ADMIN` | Created at startup from `ADMIN_EMAIL` and `ADMIN_PASSWORD` |
+| `ADMIN`      | Created at startup from `ADMIN_EMAIL` and `ADMIN_PASSWORD`   |
 
 Protect an endpoint or controller by role:
 

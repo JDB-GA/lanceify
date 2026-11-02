@@ -26,11 +26,11 @@ ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=choose-a-strong-password
 ```
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `MONGO_URI` | Yes | Atlas connection; each service sets its own database name |
-| `JWT_SECRET` | Yes | Signs and verifies tokens; must be the same for all services |
-| `ADMIN_EMAIL` | No | Creates the admin account on startup, if it doesn't exist |
-| `ADMIN_PASSWORD` | No | Password for that admin account |
+| Variable         | Required | Purpose                                                      |
+| ---------------- | -------- | ------------------------------------------------------------ |
+| `MONGO_URI`      | Yes      | Atlas connection; each service sets its own database name    |
+| `JWT_SECRET`     | Yes      | Signs and verifies tokens; must be the same for all services |
+| `ADMIN_EMAIL`    | No       | Creates the admin account on startup, if it doesn't exist    |
+| `ADMIN_PASSWORD` | No       | Password for that admin account                              |
 
 Without the two admin variables, no admin is created. Admin features and adding skills then can't be used.

@@ -13,12 +13,6 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Utility Service for generating, reading and validating tokens.
- *
- * Token format is shared with every other service:
- * sub = user id, role = ADMIN / CLIENT / FREELANCER (no ROLE_ prefix), HS256.
- */
 @Service
 public class JwtUtils {
     private static final Logger logger = Logger.getLogger(JwtUtils.class.getName());
@@ -33,11 +27,6 @@ public class JwtUtils {
         this.jwtExpirationMs = jwtExpirationMs;
     }
 
-    /**
-     * creates JWT Token for an authenticated user
-     * @param user the logged-in user
-     * @return Jwt Token
-     */
     public String generateJwtToken(User user) {
         Date now = new Date();
         return Jwts.builder()
@@ -49,20 +38,10 @@ public class JwtUtils {
                 .compact();
     }
 
-    /**
-     * get the user id that is stored in the JWT Token
-     * @param token Jwt Token
-     * @return user id that is stored in the token
-     */
     public String getUserIdFromJwtToken(String token) {
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject();
     }
 
-    /**
-     * check whether the JWT token is valid (signature and expiry)
-     * @param authToken JWT token that is sent by user
-     * @return true if token is valid, otherwise return false
-     */
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(authToken);

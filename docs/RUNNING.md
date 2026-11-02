@@ -8,10 +8,10 @@ Complete [Setup](SETUP.md) first.
 docker compose up --build
 ```
 
-| Address | What it serves |
-| --- | --- |
-| `http://localhost:3000` | Frontend |
-| `http://localhost:8080` | API gateway |
+| Address                 | What it serves |
+| ----------------------- | -------------- |
+| `http://localhost:3000` | Frontend       |
+| `http://localhost:8080` | API gateway    |
 
 Stop everything:
 

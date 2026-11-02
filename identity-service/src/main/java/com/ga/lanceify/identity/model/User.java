@@ -46,5 +46,4 @@ public class User {
     @LastModifiedDate
     private Instant updatedAt;
 
-
 }
