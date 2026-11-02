@@ -297,6 +297,7 @@ public class DemoDataSeeder implements CommandLineRunner {
 	private Document message(String id, String conversationId, String sender, String recipient, String content, boolean read) {
 		return new Document("_id", id)
 				.append("conversationId", conversationId)
+				.append("clientMessageId", id)
 				.append("senderId", sender)
 				.append("recipientId", recipient)
 				.append("content", content)
@@ -308,12 +309,18 @@ public class DemoDataSeeder implements CommandLineRunner {
 		List<Document> stored = new ArrayList<>(messages);
 		Document conversation = new Document("_id", id)
 				.append("participantIds", List.of(first, second))
+				.append("participantKey", participantKey(first, second, projectId))
 				.append("projectId", projectId)
 				.append("lastMessage", stored.isEmpty() ? null : stored.get(stored.size() - 1).getString("content"))
 				.append("lastMessageAt", now)
 				.append("createdAt", now);
 		put(communication, "conversations", conversation);
 		stored.forEach(message -> put(communication, "messages", message));
+	}
+
+	private String participantKey(String first, String second, String projectId) {
+		String pair = first.compareTo(second) < 0 ? first + "|" + second : second + "|" + first;
+		return pair + "#" + (projectId == null ? "" : projectId);
 	}
 
 	private Decimal128 money(int amount) {
