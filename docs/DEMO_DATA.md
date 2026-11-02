@@ -10,6 +10,12 @@ SEED_RESET=true docker compose up --build seed-service
 
 The password for every account is `Demo@12345`. These are public test accounts, so don't use this seed on a real production database.
 
+To add sample projects to your own client accounts, list their emails. Existing sample data isn't duplicated:
+
+```bash
+SEED_REAL_ACCOUNTS=you@example.com docker compose up --build seed-service
+```
+
 ## Accounts
 
 All emails end in `@lanceify.demo`.

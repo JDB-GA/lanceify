@@ -37,6 +37,8 @@ public class DemoDataSeeder implements CommandLineRunner {
 
 	private final boolean reset;
 
+	private final String realAccounts;
+
 	private final Date now = Date.from(Instant.now());
 
 	private String encodedPassword;
@@ -61,9 +63,11 @@ public class DemoDataSeeder implements CommandLineRunner {
 
 	private MongoDatabase communication;
 
-	public DemoDataSeeder(@Value("${seed.mongo-uri}") String mongoUri, @Value("${seed.reset}") boolean reset) {
+	public DemoDataSeeder(@Value("${seed.mongo-uri}") String mongoUri, @Value("${seed.reset}") boolean reset,
+			@Value("${seed.real-accounts}") String realAccounts) {
 		this.mongoUri = mongoUri;
 		this.reset = reset;
+		this.realAccounts = realAccounts;
 	}
 
 	@Override
@@ -75,12 +79,14 @@ public class DemoDataSeeder implements CommandLineRunner {
 			contract = client.getDatabase("contract_db");
 			communication = client.getDatabase("communication_db");
 
+			loadCatalog(client.getDatabase("catalog_db"));
+			seedRealAccounts();
+
 			if (!reset && identity.getCollection("users").find(Filters.eq("_id", MARKER_USER)).first() != null) {
 				log.info("Demo data already exists; set SEED_RESET=true to restore it");
 				return;
 			}
 
-			loadCatalog(client.getDatabase("catalog_db"));
 			encodedPassword = new BCryptPasswordEncoder().encode(PASSWORD);
 			seedUsers();
 			seedProfiles();
@@ -88,6 +94,52 @@ public class DemoDataSeeder implements CommandLineRunner {
 			seedChats();
 			log.info("Demo data ready");
 		}
+	}
+
+	private void seedRealAccounts() {
+		for (String email : realAccounts.split(",")) {
+			String clean = email.trim().toLowerCase();
+			if (clean.isEmpty()) {
+				continue;
+			}
+			Document account = identity.getCollection("users").find(Filters.eq("email", clean)).first();
+			if (account == null) {
+				log.warn("No account found for a requested seed email");
+			} else if ("CLIENT".equals(account.getString("role"))) {
+				String owner = String.valueOf(account.get("_id"));
+				if (project.getCollection("projects").find(Filters.eq("_id", "real-" + owner + "-open")).first() == null) {
+					seedRealClient(owner);
+					log.info("Sample projects added for a real client");
+				}
+			} else {
+				log.warn("Sample data can only be added to client accounts");
+			}
+		}
+	}
+
+	private void seedRealClient(String owner) {
+		String prefix = "real-" + owner;
+		project(prefix + "-open", owner, null, "Company website redesign", webCategory, List.of(java), 1200, "OPEN");
+
+		project(prefix + "-review", owner, null, "Customer booking portal", webCategory, List.of(java, react), 2500, "OPEN");
+		bid(prefix + "-review-1", prefix + "-review", "Customer booking portal", owner, "seed-fl-sara", 2300, "PENDING");
+		bid(prefix + "-review-2", prefix + "-review", "Customer booking portal", owner, "seed-fl-yousif", 2100, "PENDING");
+		bid(prefix + "-review-3", prefix + "-review", "Customer booking portal", owner, "seed-fl-noor", 2400, "REJECTED");
+
+		project(prefix + "-full", owner, null, "Online store launch", webCategory, List.of(react), 1800, "OPEN");
+		for (String[] item : new String[][] { { "1", "seed-fl-sara" }, { "2", "seed-fl-yousif" }, { "3", "seed-fl-noor" },
+				{ "4", "seed-fl-hamad" }, { "5", "seed-fl-maryam" } }) {
+			bid(prefix + "-full-" + item[0], prefix + "-full", "Online store launch", owner, item[1], 1700, "PENDING");
+		}
+
+		hired(prefix + "-prj-active", owner, "seed-fl-hamad", "Sales dashboard", webCategory, List.of(java), 3000, "ACTIVE");
+		hired(prefix + "-prj-done", owner, "seed-fl-yousif", "Brand landing page", webCategory, List.of(react), 700, "COMPLETED");
+
+		String chatId = prefix + "-chat";
+		chat(chatId, owner, "seed-fl-hamad", prefix + "-prj-active", List.of(
+				message(chatId + "-1", chatId, "seed-fl-hamad", owner, "Hello, I started work on the sales dashboard.", true),
+				message(chatId + "-2", chatId, owner, "seed-fl-hamad", "Great, please share progress this week.", true),
+				message(chatId + "-3", chatId, "seed-fl-hamad", owner, "Sure, the first version will be ready on Thursday.", false)));
 	}
 
 	private void loadCatalog(MongoDatabase catalog) throws InterruptedException {
@@ -276,9 +328,9 @@ public class DemoDataSeeder implements CommandLineRunner {
 			default -> "CANCELLED";
 		};
 		project(projectId, clientId, freelancerId, title, category, skills, amount, projectStatus);
-		String proposalId = projectId.replace("seed-prj", "seed-prp");
+		String proposalId = projectId.replace("seed-prj", "seed-prp").replace("-prj-", "-prp-");
 		bid(proposalId, projectId, title, clientId, freelancerId, amount, "ACCEPTED");
-		Document doc = new Document("_id", projectId.replace("seed-prj", "seed-ctr"))
+		Document doc = new Document("_id", projectId.replace("seed-prj", "seed-ctr").replace("-prj-", "-ctr-"))
 				.append("proposalId", proposalId)
 				.append("projectId", projectId)
 				.append("projectTitle", title)
