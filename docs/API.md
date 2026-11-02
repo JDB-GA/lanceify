@@ -81,6 +81,14 @@ Profile body, where `skillIds` come from `GET /api/skills`:
 | DELETE | `/api/categories/{id}`        | Admin     | Deactivate a category                               |
 | PUT    | `/api/categories/{id}/skills` | Admin     | Replace its skills with `{ "skillIds": [] }`        |
 
+## Proposals
+
+| Method | Path                                | Access     | Purpose                 |
+| ------ | ----------------------------------- | ---------- | ----------------------- |
+| POST   | `/api/projects/{projectId}/proposals` | Freelancer | Send a proposal         |
+| GET    | `/api/proposals/me`                 | Freelancer | List my proposals       |
+| PUT    | `/api/proposals/{id}/withdraw`      | Freelancer | Withdraw a proposal     |
+
 ## Status codes
 
 | Code | Meaning                                                            |

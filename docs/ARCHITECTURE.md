@@ -8,7 +8,8 @@ The frontend calls the API gateway, which routes each request to a service. Each
 | `api-gateway`           | 8080                                |                    | Single entry point                       | Routing works                                         |
 | `identity-service`      | 8081                                | `identity_db`      | Login, register, freelancer applications | Working                                               |
 | `catalog-service`       | 8085                                | `catalog_db`       | Skills and categories                    | Working                                               |
-| `marketplace-service`   | 8082                                | `marketplace_db`   | Projects, proposals, bookmarks           | Token checks only; no endpoints yet                   |
+| `marketplace-service`   | 8082                                | `marketplace_db`   | Projects, bookmarks                       | Token checks only; no endpoints yet                   |
+| `proposal-service` | 8086 | `proposal_db` | Freelancer proposals | Send, list and withdraw; needs project endpoints to send |
 | `contract-service`      | 8083                                | `contract_db`      | Contracts, milestones, wallets, reviews  | Token checks only; no endpoints yet                   |
 | `communication-service` | 8084                                | `communication_db` | Notifications, chat                      | Token checks only; no endpoints yet                   |
 
@@ -18,7 +19,8 @@ The frontend calls the API gateway, which routes each request to a service. Each
 | ------------------------------------------------------------------------------------------------------ | ----------------------- |
 | `/api/auth/**`, `/api/users/**`, `/api/freelancers/**`, `/api/admin/freelancer-applications/**`        | `identity-service`      |
 | `/api/skills/**`, `/api/categories/**`                                                                 | `catalog-service`       |
-| `/api/projects/**`, `/api/proposals/**`, `/api/bookmarks/**`                                           | `marketplace-service`   |
+| `/api/proposals/**`, `/api/projects/*/proposals` | `proposal-service` |
+| `/api/projects/**`, `/api/bookmarks/**` | `marketplace-service` |
 | `/api/contracts/**`, `/api/milestones/**`, `/api/wallets/**`, `/api/reviews/**`, `/api/simulations/**` | `contract-service`      |
 | `/api/notifications/**`, `/api/conversations/**`                                                       | `communication-service` |
 
