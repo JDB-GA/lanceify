@@ -11,7 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -25,9 +27,12 @@ import com.ga.lanceify.identity.exception.ConflictException;
 import com.ga.lanceify.identity.exception.ResourceNotFoundException;
 import com.ga.lanceify.identity.model.ApprovalStatus;
 import com.ga.lanceify.identity.model.FreelancerProfile;
+import com.ga.lanceify.identity.model.User;
+import com.ga.lanceify.identity.repository.UserRepository;
 import com.ga.lanceify.identity.security.JwtCurrentUserProvider;
-import com.ga.lanceify.identity.security.JwtService;
-import com.ga.lanceify.identity.security.SecurityConfig;
+import com.ga.lanceify.identity.security.JwtUtils;
+import com.ga.lanceify.identity.security.MyUserDetailsService;
+import com.ga.lanceify.identity.security.SecurityConfiguration;
 import com.ga.lanceify.identity.service.FreelancerApplicationReviewService;
 import com.ga.lanceify.identity.service.FreelancerProfileService;
 
@@ -35,7 +40,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 @WebMvcTest({ FreelancerProfileController.class, FreelancerApplicationAdminController.class })
-@Import({ SecurityConfig.class, JwtService.class, JwtCurrentUserProvider.class })
+@Import({ SecurityConfiguration.class, JwtUtils.class, MyUserDetailsService.class, JwtCurrentUserProvider.class })
 class FreelancerApplicationSecurityTests {
 
 	private static final String SECRET = "test-secret-test-secret-test-secret-1234";
@@ -49,6 +54,21 @@ class FreelancerApplicationSecurityTests {
 
 	@MockitoBean
 	private FreelancerApplicationReviewService reviews;
+
+	@MockitoBean
+	private UserRepository users;
+
+	// the JWT filter loads the user by id: a1 is ADMIN, c1 is CLIENT, b1 is banned, the rest are FREELANCER
+	@BeforeEach
+	void stubUsers() {
+		when(users.findById(any())).thenAnswer(call -> {
+			String id = call.getArgument(0);
+			User.Role role = id.startsWith("a") ? User.Role.ADMIN
+					: id.startsWith("c") ? User.Role.CLIENT : User.Role.FREELANCER;
+			return Optional.of(User.builder().id(id).email(id + "@test.com").role(role)
+					.banned(id.startsWith("b")).build());
+		});
+	}
 
 	private String bearer(String userId, String role, String secret) {
 		return "Bearer " + Jwts.builder().subject(userId).claim("role", role)
@@ -68,6 +88,12 @@ class FreelancerApplicationSecurityTests {
 	void noTokenReturns401() throws Exception {
 		mvc.perform(get("/api/freelancers/me")).andExpect(status().isUnauthorized());
 		mvc.perform(get("/api/admin/freelancer-applications")).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void bannedUserTokenReturns401() throws Exception {
+		mvc.perform(get("/api/freelancers/me").header(HttpHeaders.AUTHORIZATION, bearer("b1", "FREELANCER", SECRET)))
+				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
