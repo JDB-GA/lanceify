@@ -1,6 +1,7 @@
 package com.ga.lanceify.identity.controller;
 
 import org.springframework.http.HttpStatus;
+// import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import com.ga.lanceify.identity.service.FreelancerProfileService;
 
 import jakarta.validation.Valid;
 
+// @PreAuthorize("hasRole('FREELANCER')")
 @RestController
 @RequestMapping("/api/freelancers/me")
 public class FreelancerProfileController {

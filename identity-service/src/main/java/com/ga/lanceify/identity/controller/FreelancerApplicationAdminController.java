@@ -3,6 +3,7 @@ package com.ga.lanceify.identity.controller;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+// import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +20,7 @@ import com.ga.lanceify.identity.service.FreelancerApplicationReviewService;
 
 import jakarta.validation.Valid;
 
+// @PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/admin/freelancer-applications")
 public class FreelancerApplicationAdminController {
