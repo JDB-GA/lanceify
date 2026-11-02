@@ -38,7 +38,8 @@ public class AdminSeeder implements CommandLineRunner {
 			return;
 		}
 		userRepository.save(User.builder()
-				.fullName("Admin")
+				.firstName("Admin")
+				.lastName("User")
 				.username(email)
 				.email(email)
 				.password(passwordEncoder.encode(password))

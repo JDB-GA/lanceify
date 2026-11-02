@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ga.lanceify.identity.dto.AuthResponse;
 import com.ga.lanceify.identity.dto.LoginRequest;
+import com.ga.lanceify.identity.dto.MessageResponse;
 import com.ga.lanceify.identity.dto.RegisterRequest;
 import com.ga.lanceify.identity.service.AuthService;
 
@@ -26,7 +27,7 @@ public class AuthController {
 
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
-	public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
+	public MessageResponse register(@Valid @RequestBody RegisterRequest request) {
 		return authService.register(request);
 	}
 

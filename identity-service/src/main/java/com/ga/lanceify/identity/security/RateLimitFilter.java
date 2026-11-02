@@ -35,10 +35,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         return buckets.computeIfAbsent(key, k -> createBucket(capacity, duration));
     }
 
-    /**
-     * Behind the API gateway every request comes from the gateway's IP,
-     * so use the original client IP the gateway forwards.
-     */
+
     private String clientIp(HttpServletRequest request) {
         String forwarded = request.getHeader("X-Forwarded-For");
         if (StringUtils.hasText(forwarded)) {
