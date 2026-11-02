@@ -1,11 +1,18 @@
 package com.ga.lanceify.communication.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
 @Document(collection = "messages")
+@CompoundIndexes({
+        @CompoundIndex(name = "conversation_timeline", def = "{'conversationId': 1, 'createdAt': 1}"),
+        @CompoundIndex(name = "unread_by_recipient", def = "{'conversationId': 1, 'recipientId': 1, 'read': 1}"),
+        @CompoundIndex(name = "idempotent_send", def = "{'senderId': 1, 'clientMessageId': 1}", unique = true, sparse = true)
+})
 public class Message {
 
     @Id
@@ -18,6 +25,8 @@ public class Message {
     private String recipientId;
 
     private String content;
+
+    private String clientMessageId;
 
     private boolean read = false;
 
@@ -73,6 +82,14 @@ public class Message {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getClientMessageId() {
+        return clientMessageId;
+    }
+
+    public void setClientMessageId(String clientMessageId) {
+        this.clientMessageId = clientMessageId;
     }
 
     public boolean isRead() {

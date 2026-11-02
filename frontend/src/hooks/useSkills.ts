@@ -1,19 +1,21 @@
-import { useEffect, useState } from 'react';
-import { ApiError } from '../api/client';
+import { useMemo } from 'react';
 import { catalogApi } from '../api/catalog';
 import type { Skill } from '../types';
+import { useLoad } from './useLoad';
+
+let cached: Skill[] | null = null;
 
 export function useSkills() {
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<ApiError | null>(null);
-
-  useEffect(() => {
-    catalogApi.listSkills()
-      .then(setSkills)
-      .catch((err: ApiError) => setError(err))
-      .finally(() => setLoading(false));
+  const { data, loading, error, reload } = useLoad(async (signal) => {
+    if (cached) return cached;
+    cached = await catalogApi.listSkills(signal);
+    return cached;
   }, []);
-
-  return { skills, loading, error };
+  const skills = data ?? [];
+  const names = useMemo(() => new Map(skills.map((skill) => [skill.id, skill.name])), [skills]);
+  const refresh = () => {
+    cached = null;
+    return reload();
+  };
+  return { skills, names, loading, error, refresh };
 }

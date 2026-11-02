@@ -98,7 +98,7 @@ export default function FreelancerApplicationPage() {
   const update = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [event.target.name]: event.target.value });
 
-  if (loading) return <div className="skeleton card-sk narrow" style={{ height: 420 }} aria-label="Loading" />;
+  if (loading) return <div className="skeleton card-sk tall narrow" aria-label="Loading" />;
 
   const status = profile?.approvalStatus;
   const editable = !status || status === 'DRAFT' || status === 'REJECTED';
@@ -106,10 +106,10 @@ export default function FreelancerApplicationPage() {
   const priceInvalid = form.minPrice !== '' && form.maxPrice !== '' && Number(form.minPrice) > Number(form.maxPrice);
 
   return (
-    <section className="card narrow">
+    <section className="panel narrow">
       <div className="card-heading">
         <div>
-          <span className="eyebrow">Freelancer file</span>
+          <span className="kicker">Freelancer profile</span>
           <h1>Your <em>application</em></h1>
           <p className="muted" style={{ margin: 0 }}>
             {profile ? 'Keep your profile up to date.' : 'Tell us about your services. An admin reviews every application before you join the marketplace.'}
@@ -184,7 +184,7 @@ export default function FreelancerApplicationPage() {
           {editable && (
             <button type="button" className="button" disabled={busy || priceInvalid || form.skillIds.length === 0} onClick={submit}>
               Submit for review
-              {busy ? <span className="spinner" aria-hidden="true" /> : <span className="arrow" aria-hidden="true">→</span>}
+              {busy && <span className="spinner" aria-hidden="true" />}
             </button>
           )}
         </div>

@@ -30,6 +30,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ProblemDetail handleDuplicate(DuplicateKeyException ex) {
+        String detail = String.valueOf(ex.getMessage());
+        if (detail.contains("one_accepted_per_project")) {
+            return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,
+                    "Another proposal has already been accepted for this project");
+        }
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "You have already applied to this project");
     }
 

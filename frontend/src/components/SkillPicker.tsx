@@ -52,7 +52,7 @@ export default function SkillPicker({ skills, loading, unavailable, selected, di
         })}
         {query && visible.length === 0 && <span className="muted">No skills match “{query}”.</span>}
       </div>
-      <small className="muted">Choose 1 to {MAX_SKILLS} skills that best describe your work.</small>
+      <small className="muted">Choose 1 to {MAX_SKILLS} skills.</small>
     </fieldset>
   );
 }

@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * The parts of a project (from marketplace-service) that proposal-service needs.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

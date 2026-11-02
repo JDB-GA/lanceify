@@ -19,6 +19,8 @@ public class ProposalResponse {
 
     private String clientId;
 
+    private String projectTitle;
+
     private String freelancerId;
 
     private String coverLetter;
@@ -31,17 +33,24 @@ public class ProposalResponse {
 
     private Instant createdAt;
 
+    private Instant decidedAt;
+
+    private Long version;
+
     public static ProposalResponse from(Proposal proposal) {
         return new ProposalResponse(
                 proposal.getId(),
                 proposal.getProjectId(),
                 proposal.getClientId(),
+                proposal.getProjectTitle(),
                 proposal.getFreelancerId(),
                 proposal.getCoverLetter(),
                 proposal.getBidAmount(),
                 proposal.getDeliveryDays(),
                 proposal.getStatus(),
-                proposal.getCreatedAt());
+                proposal.getCreatedAt(),
+                proposal.getDecidedAt(),
+                proposal.getVersion());
     }
 
 }

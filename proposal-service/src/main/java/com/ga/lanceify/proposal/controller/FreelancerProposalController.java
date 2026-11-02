@@ -31,20 +31,17 @@ public class FreelancerProposalController {
         this.currentUser = currentUser;
     }
 
-    // Apply to a client's project
     @PostMapping("/api/projects/{projectId}/proposals")
     @ResponseStatus(HttpStatus.CREATED)
     public ProposalResponse apply(@PathVariable String projectId, @Valid @RequestBody ApplyRequest request) {
         return ProposalResponse.from(service.apply(currentUser.getUserId(), projectId, request));
     }
 
-    // My applications and their status
     @GetMapping("/api/proposals/me")
     public List<ProposalResponse> myProposals() {
         return service.myProposals(currentUser.getUserId()).stream().map(ProposalResponse::from).toList();
     }
 
-    // Cancel my application (only while PENDING)
     @PutMapping("/api/proposals/{id}/withdraw")
     public ProposalResponse withdraw(@PathVariable String id) {
         return ProposalResponse.from(service.withdraw(currentUser.getUserId(), id));

@@ -4,6 +4,7 @@ import com.ga.lanceify.communication.dto.CommunicationDtos.ConversationResponse;
 import com.ga.lanceify.communication.dto.CommunicationDtos.MessageResponse;
 import com.ga.lanceify.communication.dto.CommunicationDtos.SendMessageRequest;
 import com.ga.lanceify.communication.dto.CommunicationDtos.StartConversationRequest;
+import com.ga.lanceify.communication.dto.CommunicationDtos.UnreadCountResponse;
 import com.ga.lanceify.communication.service.CommunicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +38,16 @@ public class ConversationController {
     public ResponseEntity<List<ConversationResponse>> getUserConversations(Authentication authentication) {
         List<ConversationResponse> conversations = communicationService.getUserConversations(authentication.getName());
         return ResponseEntity.ok(conversations);
+    }
+
+    @GetMapping("/unread")
+    public ResponseEntity<UnreadCountResponse> getUnreadCount(Authentication authentication) {
+        return ResponseEntity.ok(communicationService.getUnreadCount(authentication.getName()));
+    }
+
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamInbox(Authentication authentication) {
+        return communicationService.subscribeToInbox(authentication.getName());
     }
 
     @GetMapping("/{id}")

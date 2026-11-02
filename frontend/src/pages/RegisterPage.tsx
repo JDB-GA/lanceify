@@ -2,14 +2,15 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthShell from '../components/AuthShell';
 import ErrorMessage from '../components/ErrorMessage';
+import Icon, { type IconName } from '../components/Icon';
 import PasswordInput from '../components/PasswordInput';
 import { useAuth } from '../context/AuthContext';
 import { useAsyncAction } from '../hooks/useAsyncAction';
 import type { RegisterRequest, RegisterRole } from '../types';
 
-const ROLES: { value: RegisterRole; letter: string; title: string; hint: string }[] = [
-  { value: 'FREELANCER', letter: 'A', title: 'I make things', hint: 'Offer your services and get hired' },
-  { value: 'CLIENT', letter: 'B', title: 'I need things made', hint: 'Post projects and find talent' },
+const ROLES: { value: RegisterRole; icon: IconName; title: string; hint: string }[] = [
+  { value: 'CLIENT', icon: 'briefcase', title: 'I want to hire', hint: 'Post projects and pick the best proposal' },
+  { value: 'FREELANCER', icon: 'spark', title: 'I want to work', hint: 'Offer your skills and send proposals' },
 ];
 
 export default function RegisterPage() {
@@ -22,7 +23,7 @@ export default function RegisterPage() {
     username: '',
     email: '',
     password: '',
-    role: 'FREELANCER',
+    role: 'CLIENT',
   });
 
   const update = (event: ChangeEvent<HTMLInputElement>) =>
@@ -30,6 +31,7 @@ export default function RegisterPage() {
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    if (busy) return;
     run(async () => {
       const message = await register(form);
       navigate('/login', { state: { message } });
@@ -41,16 +43,15 @@ export default function RegisterPage() {
   return (
     <AuthShell>
       <form className="auth-card" onSubmit={submit}>
-        <span className="eyebrow">New account</span>
-        <h1>Join <em>lanceify.</em></h1>
-        <p className="subtitle">Tell us which side of the table you sit on.</p>
+        <h1>Join Lanceify</h1>
+        <p className="subtitle">First, how will you use it?</p>
         <ErrorMessage error={error} />
         <fieldset className="role-picker">
-          <legend>Choose one</legend>
+          <legend className="sr-only">Account type</legend>
           {ROLES.map((role) => (
             <label key={role.value} className={form.role === role.value ? 'role-option selected' : 'role-option'}>
               <input type="radio" name="role" value={role.value} checked={form.role === role.value} onChange={update} />
-              <span className="letter" aria-hidden="true">({role.letter})</span>
+              <span className="role-icon"><Icon name={role.icon} size={20} /></span>
               <strong>{role.title}</strong>
               <small>{role.hint}</small>
             </label>
@@ -76,11 +77,11 @@ export default function RegisterPage() {
             {passwordShort ? `${8 - form.password.length} more characters needed` : '8 to 72 characters'}
           </small>
         </label>
-        <button className="button" disabled={busy}>
+        <button className="button block" disabled={busy}>
           {busy ? 'Creating account…' : 'Create account'}
-          {busy ? <span className="spinner" aria-hidden="true" /> : <span className="arrow" aria-hidden="true">→</span>}
+          {busy ? <span className="spinner" aria-hidden="true" /> : <Icon name="arrow" size={16} />}
         </button>
-        <p className="muted center">Already have an account? <Link to="/login">Log in</Link></p>
+        <p className="muted center">Already have an account? <Link to="/login">Sign in</Link></p>
       </form>
     </AuthShell>
   );

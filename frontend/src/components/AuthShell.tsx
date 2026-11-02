@@ -1,26 +1,38 @@
 import type { ReactNode } from 'react';
 import Brand from './Brand';
+import Icon, { type IconName } from './Icon';
 
-const POINTS = ['Every freelancer is reviewed by a person', 'Clear price ranges, no surprises', 'Matched on real skills'];
+const POINTS: { icon: IconName; text: string }[] = [
+  { icon: 'shield', text: 'Every freelancer is reviewed by a real person' },
+  { icon: 'dollar', text: 'Clear budgets and bids, no surprises' },
+  { icon: 'bolt', text: 'Live chat with the people you hire' },
+];
 
 export default function AuthShell({ children }: { children: ReactNode }) {
   return (
     <div className="auth-page">
       <aside className="auth-hero">
         <Brand />
-        <span className="auth-stamp" aria-hidden="true">Hand<br />reviewed<br />talent</span>
-        <div>
-          <h2>Good work,<br /><em>found.</em></h2>
-          <p>A small marketplace for people who take their craft seriously, and the clients who notice.</p>
+        <div className="auth-copy">
+          <span className="kicker light">The vetted marketplace</span>
+          <h2>Work with people who <em>care</em> about the craft.</h2>
+          <ul className="auth-features">
+            {POINTS.map((point) => (
+              <li key={point.text}><span><Icon name={point.icon} /></span>{point.text}</li>
+            ))}
+          </ul>
         </div>
-        <ul className="auth-features">
-          {POINTS.map((point, index) => (
-            <li key={point}><span>0{index + 1}</span>{point}</li>
-          ))}
-        </ul>
-        <div className="auth-foot">
-          <span>Est. {new Date().getFullYear()}</span>
-          <span>Freelance, done properly</span>
+        <div className="auth-quote">
+          <div className="floating-card">
+            <span className="badge accepted">Hired</span>
+            <strong>Brand identity for a coffee roastery</strong>
+            <small>$1,200 · delivered in 9 days</small>
+          </div>
+          <div className="floating-card offset">
+            <span className="badge pending">New proposal</span>
+            <strong>React dashboard rebuild</strong>
+            <small>3 freelancers bid in the last hour</small>
+          </div>
         </div>
       </aside>
       <main className="auth-main">{children}</main>

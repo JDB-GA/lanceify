@@ -13,7 +13,8 @@ public final class CommunicationDtos {
     ) {}
 
     public record SendMessageRequest(
-            String content
+            String content,
+            String clientMessageId
     ) {}
 
     public record ConversationResponse(
@@ -21,6 +22,7 @@ public final class CommunicationDtos {
             List<String> participantIds,
             String projectId,
             String lastMessage,
+            String lastSenderId,
             Instant lastMessageAt,
             Instant createdAt,
             long unreadCount
@@ -32,7 +34,18 @@ public final class CommunicationDtos {
             String senderId,
             String recipientId,
             String content,
+            String clientMessageId,
             boolean read,
             Instant createdAt
+    ) {}
+
+    public record ReadReceipt(
+            String conversationId,
+            String readerId,
+            Instant readAt
+    ) {}
+
+    public record UnreadCountResponse(
+            long count
     ) {}
 }

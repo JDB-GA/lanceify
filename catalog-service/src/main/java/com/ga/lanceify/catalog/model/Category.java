@@ -1,6 +1,8 @@
 package com.ga.lanceify.catalog.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -11,10 +13,14 @@ public class Category {
 
     @Id
     private String id;
+    @Indexed(unique = true, collation = "{ 'locale': 'en', 'strength': 2 }")
     private String name;
     private String description;
     private List<String> skillIds = new ArrayList<>();
     private boolean active = true;
+
+    @Version
+    private Long version;
 
     public Category() {}
 
@@ -64,5 +70,13 @@ public class Category {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

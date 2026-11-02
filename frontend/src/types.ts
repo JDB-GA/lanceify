@@ -1,6 +1,7 @@
 export type Role = 'ADMIN' | 'CLIENT' | 'FREELANCER';
 export type RegisterRole = Exclude<Role, 'ADMIN'>;
 export type ApprovalStatus = 'DRAFT' | 'PENDING' | 'APPROVED' | 'REJECTED';
+export type ProposalStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN';
 
 export interface Session {
   token: string;
@@ -60,4 +61,95 @@ export interface Skill {
   id: string;
   name: string;
   active: boolean;
+  version: number | null;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string | null;
+  skillIds: string[];
+  active: boolean;
+  version: number | null;
+}
+
+export interface UserSummary {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  role: Role;
+}
+
+export interface Project {
+  id: string;
+  clientId: string;
+  title: string;
+  description: string;
+  budgetMin: number | null;
+  budgetMax: number | null;
+  skillIds: string[];
+  deadline: string | null;
+  status: string;
+  createdAt: string | null;
+}
+
+export interface ProjectRequest {
+  title: string;
+  description: string;
+  budgetMin: number | null;
+  budgetMax: number | null;
+  skillIds: string[];
+  deadline: string | null;
+}
+
+export interface ApplyRequest {
+  coverLetter: string;
+  bidAmount: number;
+  deliveryDays: number;
+}
+
+export interface Proposal {
+  id: string;
+  projectId: string;
+  clientId: string;
+  projectTitle: string | null;
+  freelancerId: string;
+  coverLetter: string;
+  bidAmount: number;
+  deliveryDays: number;
+  status: ProposalStatus;
+  createdAt: string;
+  decidedAt: string | null;
+  version: number | null;
+}
+
+export interface Conversation {
+  id: string;
+  participantIds: string[];
+  projectId: string | null;
+  lastMessage: string | null;
+  lastSenderId: string | null;
+  lastMessageAt: string | null;
+  createdAt: string;
+  unreadCount: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  recipientId: string;
+  content: string;
+  clientMessageId: string | null;
+  read: boolean;
+  createdAt: string;
+  pending?: boolean;
+  failed?: boolean;
+}
+
+export interface ReadReceipt {
+  conversationId: string;
+  readerId: string;
+  readAt: string;
 }

@@ -1,6 +1,8 @@
 package com.ga.lanceify.catalog.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "skills")
@@ -8,8 +10,12 @@ public class Skill {
 
     @Id
     private String id;
+    @Indexed(unique = true, collation = "{ 'locale': 'en', 'strength': 2 }")
     private String name;
     private boolean active = true;
+
+    @Version
+    private Long version;
 
     public Skill() {}
 
@@ -41,5 +47,13 @@ public class Skill {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

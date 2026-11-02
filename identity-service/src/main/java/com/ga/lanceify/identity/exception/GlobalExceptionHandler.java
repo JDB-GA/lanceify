@@ -45,6 +45,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(DuplicateKeyException.class)
 	public ProblemDetail handleDuplicateKey(DuplicateKeyException ex) {
+		String detail = String.valueOf(ex.getMessage());
+		if (detail.contains("email")) {
+			return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Email is already registered");
+		}
+		if (detail.contains("username")) {
+			return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Username is already taken");
+		}
 		return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Freelancer profile already exists");
 	}
 

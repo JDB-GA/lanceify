@@ -1,6 +1,7 @@
 package com.ga.lanceify.communication.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -13,11 +14,17 @@ public class Conversation {
     @Id
     private String id;
 
+    @Indexed
     private List<String> participantIds = new ArrayList<>();
+
+    @Indexed(unique = true, sparse = true)
+    private String participantKey;
 
     private String projectId;
 
     private String lastMessage;
+
+    private String lastSenderId;
 
     private Instant lastMessageAt;
 
@@ -29,8 +36,14 @@ public class Conversation {
         this.id = id;
         this.participantIds = (participantIds != null) ? participantIds : new ArrayList<>();
         this.projectId = projectId;
+        this.participantKey = keyFor(this.participantIds, projectId);
         this.createdAt = Instant.now();
-        this.lastMessageAt = Instant.now();
+        this.lastMessageAt = this.createdAt;
+    }
+
+    public static String keyFor(List<String> participantIds, String projectId) {
+        List<String> sorted = participantIds.stream().sorted().toList();
+        return String.join("|", sorted) + "#" + (projectId == null ? "" : projectId);
     }
 
     public String getId() {
@@ -49,6 +62,14 @@ public class Conversation {
         this.participantIds = participantIds;
     }
 
+    public String getParticipantKey() {
+        return participantKey;
+    }
+
+    public void setParticipantKey(String participantKey) {
+        this.participantKey = participantKey;
+    }
+
     public String getProjectId() {
         return projectId;
     }
@@ -63,6 +84,14 @@ public class Conversation {
 
     public void setLastMessage(String lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public String getLastSenderId() {
+        return lastSenderId;
+    }
+
+    public void setLastSenderId(String lastSenderId) {
+        this.lastSenderId = lastSenderId;
     }
 
     public Instant getLastMessageAt() {

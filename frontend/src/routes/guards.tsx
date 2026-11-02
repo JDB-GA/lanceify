@@ -5,10 +5,11 @@ import { useAuth } from '../context/AuthContext';
 import type { Role } from '../types';
 import { homeFor } from './paths';
 
-export function Protected({ role, children }: { role: Role; children: ReactNode }) {
+export function Protected({ role, children }: { role?: Role | Role[]; children: ReactNode }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== role) return <Navigate to={homeFor(user.role)} replace />;
+  const allowed = role === undefined || (Array.isArray(role) ? role.includes(user.role) : user.role === role);
+  if (!allowed) return <Navigate to={homeFor(user.role)} replace />;
   return <Layout>{children}</Layout>;
 }
 

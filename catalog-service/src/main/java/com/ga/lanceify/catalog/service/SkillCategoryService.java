@@ -11,6 +11,7 @@ import com.ga.lanceify.catalog.model.Category;
 import com.ga.lanceify.catalog.model.Skill;
 import com.ga.lanceify.catalog.repository.CategoryRepository;
 import com.ga.lanceify.catalog.repository.SkillRepository;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -64,6 +65,7 @@ public class SkillCategoryService {
         if (req.name() == null || req.name().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Skill name is required");
         }
+        requireVersion(skill.getVersion(), req.version());
         String cleanName = req.name().trim();
         if (!skill.getName().equalsIgnoreCase(cleanName) && skillRepository.existsByNameIgnoreCase(cleanName)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Skill with this name already exists");
@@ -125,6 +127,7 @@ public class SkillCategoryService {
         if (req.name() == null || req.name().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name is required");
         }
+        requireVersion(category.getVersion(), req.version());
         String cleanName = req.name().trim();
         if (!category.getName().equalsIgnoreCase(cleanName) && categoryRepository.existsByNameIgnoreCase(cleanName)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Category with this name already exists");
@@ -151,6 +154,7 @@ public class SkillCategoryService {
         if (req.skillIds() == null || req.skillIds().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one skill ID is required");
         }
+        requireVersion(category.getVersion(), req.version());
 
         List<Skill> validSkills = skillRepository.findByIdInAndActiveTrue(req.skillIds());
         if (validSkills.size() != req.skillIds().size()) {
@@ -162,8 +166,14 @@ public class SkillCategoryService {
         return toCategoryResponse(updated);
     }
 
+    private void requireVersion(Long current, Long expected) {
+        if (expected != null && !expected.equals(current)) {
+            throw new OptimisticLockingFailureException("Stale version");
+        }
+    }
+
     private SkillResponse toSkillResponse(Skill skill) {
-        return new SkillResponse(skill.getId(), skill.getName(), skill.isActive());
+        return new SkillResponse(skill.getId(), skill.getName(), skill.isActive(), skill.getVersion());
     }
 
     private CategoryResponse toCategoryResponse(Category category) {
@@ -172,7 +182,8 @@ public class SkillCategoryService {
                 category.getName(),
                 category.getDescription(),
                 category.getSkillIds(),
-                category.isActive()
+                category.isActive(),
+                category.getVersion()
         );
     }
 }

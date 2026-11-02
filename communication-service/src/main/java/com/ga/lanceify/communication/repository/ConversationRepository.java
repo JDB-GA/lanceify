@@ -12,14 +12,7 @@ public interface ConversationRepository extends MongoRepository<Conversation, St
 
     List<Conversation> findByParticipantIdsContainingOrderByLastMessageAtDesc(String userId);
 
-    Optional<Conversation> findByParticipantIdsContainingAndParticipantIdsContainingAndProjectId(
-            String participant1,
-            String participant2,
-            String projectId
-    );
+    Optional<Conversation> findByParticipantKey(String participantKey);
 
-    Optional<Conversation> findByParticipantIdsContainingAndParticipantIdsContaining(
-            String participant1,
-            String participant2
-    );
+    List<Conversation> findByParticipantKeyIsNull();
 }
