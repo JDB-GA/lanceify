@@ -9,7 +9,7 @@ services:
   api-gateway:
     build: ./api-gateway
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       IDENTITY_SERVICE_URL: http://identity-service:8081
       MARKETPLACE_SERVICE_URL: http://marketplace-service:8082
@@ -56,6 +56,7 @@ services:
     environment:
       PROJECT_SERVICE_URL: http://project-service:8087
       CONTRACT_SERVICE_URL: http://contract-service:8083
+      IDENTITY_SERVICE_URL: http://identity-service:8081
 
   project-service:
     build: ./project-service

@@ -14,11 +14,13 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.ga.lanceify.proposal.client.ContractClient;
+import com.ga.lanceify.proposal.client.IdentityClient;
 import com.ga.lanceify.proposal.client.ProjectClient;
 import com.ga.lanceify.proposal.dto.ApplyRequest;
 import com.ga.lanceify.proposal.dto.ContractSummary;
 import com.ga.lanceify.proposal.dto.ProjectSummary;
 import com.ga.lanceify.proposal.exception.ConflictException;
+import com.ga.lanceify.proposal.exception.ForbiddenException;
 import com.ga.lanceify.proposal.exception.ResourceNotFoundException;
 import com.ga.lanceify.proposal.model.Proposal;
 import com.ga.lanceify.proposal.model.Proposal.ProposalStatus;
@@ -34,18 +36,23 @@ public class ProposalService {
     private final ProposalRepository proposalRepository;
     private final ProjectClient projectClient;
     private final ContractClient contractClient;
+    private final IdentityClient identityClient;
     private final MongoTemplate mongoTemplate;
     private final Map<String, ReentrantLock> projectLocks = new ConcurrentHashMap<>();
 
     public ProposalService(ProposalRepository proposalRepository, ProjectClient projectClient,
-            ContractClient contractClient, MongoTemplate mongoTemplate) {
+            ContractClient contractClient, IdentityClient identityClient, MongoTemplate mongoTemplate) {
         this.proposalRepository = proposalRepository;
         this.projectClient = projectClient;
         this.contractClient = contractClient;
+        this.identityClient = identityClient;
         this.mongoTemplate = mongoTemplate;
     }
 
     public Proposal apply(String freelancerId, String projectId, ApplyRequest request) {
+        if (!identityClient.isCallerApproved()) {
+            throw new ForbiddenException("Your freelancer application must be approved before you can apply");
+        }
         ProjectSummary project = projectClient.getProject(projectId);
         if (!project.isOpen() || proposalRepository.existsByProjectIdAndStatus(projectId, ProposalStatus.ACCEPTED)) {
             throw new ConflictException("This project is no longer accepting proposals");

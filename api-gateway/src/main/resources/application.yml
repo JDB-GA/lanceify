@@ -1,5 +1,8 @@
 server:
   port: 8080
+  error:
+    include-stacktrace: never
+    include-exception: false
 
 identity-url: ${IDENTITY_SERVICE_URL:http://localhost:8081}
 marketplace-url: ${MARKETPLACE_SERVICE_URL:http://localhost:8082}
@@ -20,7 +23,7 @@ spring:
             - id: identity-service
               uri: ${identity-url}
               predicates:
-                - Path=/api/auth/**,/api/users/**,/api/freelancers/**,/api/admin/freelancer-applications/**
+                - Path=/api/auth/**,/api/users/**,/api/freelancers/**,/api/admin/freelancer-applications/**,/api/admin/users/**
             - id: catalog-service
               uri: ${catalog-url}
               predicates:
