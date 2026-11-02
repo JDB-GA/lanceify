@@ -41,7 +41,7 @@ export default function ApplicationCard({ application, skillNames, busy, onAppro
           <dd>
             {application.skillIds.length === 0 ? '—' : (
               <span className="tag-list">
-                {application.skillIds.map((id) => <span key={id} className="tag">{skillNames.get(id) ?? id}</span>)}
+                {application.skillIds.map((id) => <span key={id} className="tag">{skillNames.get(id) ?? 'Unavailable skill'}</span>)}
               </span>
             )}
           </dd>

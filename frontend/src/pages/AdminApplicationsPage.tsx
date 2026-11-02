@@ -18,7 +18,7 @@ export default function AdminApplicationsPage() {
   const [page, setPage] = useState(0);
   const [data, setData] = useState<Page<FreelancerProfile> | null>(null);
   const { busy, error, run } = useAsyncAction();
-  const { skills } = useSkills();
+  const { skills, reload: reloadSkills } = useSkills();
   const skillNames = useMemo(() => new Map(skills.map((skill) => [skill.id, skill.name])), [skills]);
 
   const load = useCallback(async () => {
@@ -27,7 +27,8 @@ export default function AdminApplicationsPage() {
 
   useEffect(() => {
     run(load);
-  }, [run, load]);
+    reloadSkills();
+  }, [run, load, reloadSkills]);
 
   const chooseFilter = (next: ApprovalStatus) => {
     setStatus(next);
