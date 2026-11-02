@@ -1,9 +1,16 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import AuthShell from '../components/AuthShell';
 import ErrorMessage from '../components/ErrorMessage';
+import PasswordInput from '../components/PasswordInput';
 import { useAuth } from '../context/AuthContext';
 import { useAsyncAction } from '../hooks/useAsyncAction';
-import type { RegisterRequest } from '../types';
+import type { RegisterRequest, RegisterRole } from '../types';
+
+const ROLES: { value: RegisterRole; letter: string; title: string; hint: string }[] = [
+  { value: 'FREELANCER', letter: 'A', title: 'I make things', hint: 'Offer your services and get hired' },
+  { value: 'CLIENT', letter: 'B', title: 'I need things made', hint: 'Post projects and find talent' },
+];
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -29,21 +36,25 @@ export default function RegisterPage() {
     });
   };
 
+  const passwordShort = form.password.length > 0 && form.password.length < 8;
+
   return (
-    <main className="auth-page">
-      <form className="card auth-card" onSubmit={submit}>
-        <h1>Create your account</h1>
+    <AuthShell>
+      <form className="auth-card" onSubmit={submit}>
+        <span className="eyebrow">New account</span>
+        <h1>Join <em>lanceify.</em></h1>
+        <p className="subtitle">Tell us which side of the table you sit on.</p>
         <ErrorMessage error={error} />
         <fieldset className="role-picker">
-          <legend>I want to</legend>
-          <label className={form.role === 'FREELANCER' ? 'selected' : ''}>
-            <input type="radio" name="role" value="FREELANCER" checked={form.role === 'FREELANCER'} onChange={update} />
-            Offer my services
-          </label>
-          <label className={form.role === 'CLIENT' ? 'selected' : ''}>
-            <input type="radio" name="role" value="CLIENT" checked={form.role === 'CLIENT'} onChange={update} />
-            Hire freelancers
-          </label>
+          <legend>Choose one</legend>
+          {ROLES.map((role) => (
+            <label key={role.value} className={form.role === role.value ? 'role-option selected' : 'role-option'}>
+              <input type="radio" name="role" value={role.value} checked={form.role === role.value} onChange={update} />
+              <span className="letter" aria-hidden="true">({role.letter})</span>
+              <strong>{role.title}</strong>
+              <small>{role.hint}</small>
+            </label>
+          ))}
         </fieldset>
         <div className="row">
           <label>First name
@@ -57,15 +68,20 @@ export default function RegisterPage() {
           <input name="username" autoComplete="username" required minLength={3} maxLength={30} value={form.username} onChange={update} />
         </label>
         <label>Email
-          <input name="email" type="email" autoComplete="email" required value={form.email} onChange={update} />
+          <input name="email" type="email" autoComplete="email" placeholder="you@example.com" required value={form.email} onChange={update} />
         </label>
         <label>Password
-          <input name="password" type="password" autoComplete="new-password" required minLength={8} maxLength={72} value={form.password} onChange={update} />
-          <small className="muted">8 to 72 characters</small>
+          <PasswordInput name="password" autoComplete="new-password" required minLength={8} maxLength={72} value={form.password} onChange={update} />
+          <small className={passwordShort ? 'field-error' : 'muted'}>
+            {passwordShort ? `${8 - form.password.length} more characters needed` : '8 to 72 characters'}
+          </small>
         </label>
-        <button className="button" disabled={busy}>{busy ? 'Creating account…' : 'Create account'}</button>
-        <p className="muted center">Already registered? <Link to="/login">Log in</Link></p>
+        <button className="button" disabled={busy}>
+          {busy ? 'Creating account…' : 'Create account'}
+          {busy ? <span className="spinner" aria-hidden="true" /> : <span className="arrow" aria-hidden="true">→</span>}
+        </button>
+        <p className="muted center">Already have an account? <Link to="/login">Log in</Link></p>
       </form>
-    </main>
+    </AuthShell>
   );
 }

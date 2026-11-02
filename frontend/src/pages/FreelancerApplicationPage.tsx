@@ -15,6 +15,14 @@ interface ProfileForm {
   skillIds: string[];
 }
 
+const BIO_MAX = 2000;
+
+const STEPS: { label: string; reached: (status?: ApprovalStatus) => boolean }[] = [
+  { label: 'Draft', reached: () => true },
+  { label: 'Submitted', reached: (status) => status === 'PENDING' || status === 'APPROVED' || status === 'REJECTED' },
+  { label: 'Approved', reached: (status) => status === 'APPROVED' },
+];
+
 const EMPTY_FORM: ProfileForm = { bio: '', minPrice: '', maxPrice: '', skillIds: [] };
 
 const STATUS_HELP: Partial<Record<ApprovalStatus, string>> = {
@@ -90,38 +98,75 @@ export default function FreelancerApplicationPage() {
   const update = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [event.target.name]: event.target.value });
 
-  if (loading) return <p className="muted">Loading…</p>;
+  if (loading) return <div className="skeleton card-sk narrow" style={{ height: 420 }} aria-label="Loading" />;
 
   const status = profile?.approvalStatus;
   const editable = !status || status === 'DRAFT' || status === 'REJECTED';
   const help = status && STATUS_HELP[status];
+  const priceInvalid = form.minPrice !== '' && form.maxPrice !== '' && Number(form.minPrice) > Number(form.maxPrice);
 
   return (
     <section className="card narrow">
       <div className="card-heading">
-        <h1>Freelancer application</h1>
+        <div>
+          <span className="eyebrow">Freelancer file</span>
+          <h1>Your <em>application</em></h1>
+          <p className="muted" style={{ margin: 0 }}>
+            {profile ? 'Keep your profile up to date.' : 'Tell us about your services. An admin reviews every application before you join the marketplace.'}
+          </p>
+        </div>
         {status && <StatusBadge status={status} />}
       </div>
-      {!profile && <p className="muted">Tell us about your services. An admin reviews every application before you can join the marketplace.</p>}
-      {help && <p className="muted">{help}</p>}
+      <ol className="steps" aria-label="Application progress">
+        {STEPS.map((step, index) => {
+          const reached = step.reached(status);
+          const failed = status === 'REJECTED' && index === STEPS.length - 1;
+          return (
+            <li key={step.label} className={failed ? 'failed' : reached ? 'done' : ''}>
+              <b>0{index + 1}</b>{failed ? 'Rejected' : step.label}
+            </li>
+          );
+        })}
+      </ol>
+      {help && <div className={status === 'APPROVED' ? 'alert success' : 'alert info'}>{help}</div>}
       {status === 'REJECTED' && profile?.rejectionReason && (
-        <div className="alert warning"><strong>Rejection reason:</strong> {profile.rejectionReason}<br />Edit your application and submit it again.</div>
+        <div className="alert warning">
+          <div><strong>Rejection reason:</strong> {profile.rejectionReason}<br />Update your application and submit it again.</div>
+        </div>
       )}
       <ErrorMessage error={error} />
       {notice && <div className="alert success" role="status">{notice}</div>}
       <form onSubmit={save}>
         <fieldset disabled={!editable || busy} className="plain">
+          <h2 className="section-title"><span>01</span> About you</h2>
           <label>Bio
-            <textarea name="bio" rows={4} maxLength={2000} value={form.bio} onChange={update} />
+            <textarea
+              name="bio"
+              rows={5}
+              maxLength={BIO_MAX}
+              placeholder="Describe your experience, the services you offer and what makes you stand out…"
+              value={form.bio}
+              onChange={update}
+            />
+            <span className="field-meta"><span>A clear bio helps your application get approved faster.</span><span>{form.bio.length}/{BIO_MAX}</span></span>
           </label>
+          <h2 className="section-title"><span>02</span> Pricing</h2>
           <div className="row">
             <label>Minimum price
-              <input name="minPrice" type="number" min="0" step="0.01" value={form.minPrice} onChange={update} />
+              <span className="input-group">
+                <span className="prefix">$</span>
+                <input name="minPrice" type="number" min="0" step="0.01" placeholder="0.00" value={form.minPrice} onChange={update} />
+              </span>
             </label>
             <label>Maximum price
-              <input name="maxPrice" type="number" min="0" step="0.01" value={form.maxPrice} onChange={update} />
+              <span className="input-group">
+                <span className="prefix">$</span>
+                <input name="maxPrice" type="number" min="0" step="0.01" placeholder="0.00" value={form.maxPrice} onChange={update} />
+              </span>
             </label>
           </div>
+          {priceInvalid && <p className="field-error" style={{ marginTop: -8 }}>Minimum price can’t be higher than maximum price.</p>}
+          <h2 className="section-title"><span>03</span> Skills</h2>
           <SkillPicker
             skills={catalog.skills}
             loading={catalog.loading}
@@ -131,11 +176,16 @@ export default function FreelancerApplicationPage() {
             onChange={(skillIds) => setForm({ ...form, skillIds })}
           />
         </fieldset>
-        <div className="actions">
-          {editable && <button className="button secondary" disabled={busy}>Save draft</button>}
-          {editable && <button type="button" className="button" disabled={busy} onClick={submit}>Submit for review</button>}
+        <div className="actions end">
           {profile && status !== 'APPROVED' && (
             <button type="button" className="button danger" disabled={busy} onClick={withdraw}>Withdraw</button>
+          )}
+          {editable && <button className="button secondary" disabled={busy || priceInvalid}>Save draft</button>}
+          {editable && (
+            <button type="button" className="button" disabled={busy || priceInvalid || form.skillIds.length === 0} onClick={submit}>
+              Submit for review
+              {busy ? <span className="spinner" aria-hidden="true" /> : <span className="arrow" aria-hidden="true">→</span>}
+            </button>
           )}
         </div>
       </form>

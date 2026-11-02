@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { adminApi } from '../api/admin';
 import ApplicationCard from '../components/ApplicationCard';
+import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 import Pagination from '../components/Pagination';
 import { useAsyncAction } from '../hooks/useAsyncAction';
@@ -47,7 +48,14 @@ export default function AdminApplicationsPage() {
 
   return (
     <section>
-      <h1>Freelancer applications</h1>
+      <div className="page-header">
+        <div>
+          <span className="eyebrow">Admin · Review queue</span>
+          <h1>The <em>applications</em></h1>
+          <p className="muted">Read carefully. Every approval is a promise to our clients.</p>
+        </div>
+        {data && <div className="count">{String(data.totalElements).padStart(2, '0')}<small>{status.toLowerCase()}</small></div>}
+      </div>
       <div className="tabs" role="group" aria-label="Filter by status">
         {FILTERS.map((item) => (
           <button key={item} className={item === status ? 'tab active' : 'tab'} aria-pressed={item === status} onClick={() => chooseFilter(item)}>
@@ -56,8 +64,12 @@ export default function AdminApplicationsPage() {
         ))}
       </div>
       <ErrorMessage error={error} />
-      {!data && !error && <p className="muted">Loading…</p>}
-      {data?.content.length === 0 && <div className="card muted">No {status.toLowerCase()} applications.</div>}
+      {!data && !error && [0, 1, 2].map((key) => <div key={key} className="skeleton card-sk" aria-hidden="true" />)}
+      {data?.content.length === 0 && (
+        <EmptyState title={status === 'PENDING' ? 'Inbox zero.' : 'Nothing here.'}>
+          {status === 'PENDING' ? 'No one is waiting on you. Go make a coffee.' : `No ${status.toLowerCase()} applications yet.`}
+        </EmptyState>
+      )}
       {data?.content.map((application) => (
         <ApplicationCard key={application.id} application={application} skillNames={skillNames} busy={busy} onApprove={approve} onReject={reject} />
       ))}
