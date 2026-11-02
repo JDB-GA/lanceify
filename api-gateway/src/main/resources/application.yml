@@ -6,6 +6,7 @@ marketplace-url: ${MARKETPLACE_SERVICE_URL:http://localhost:8082}
 contract-url: ${CONTRACT_SERVICE_URL:http://localhost:8083}
 communication-url: ${COMMUNICATION_SERVICE_URL:http://localhost:8084}
 catalog-url: ${CATALOG_SERVICE_URL:http://localhost:8085}
+proposal-url: ${PROPOSAL_SERVICE_URL:http://localhost:8086}
 
 spring:
   application:
@@ -23,10 +24,14 @@ spring:
               uri: ${catalog-url}
               predicates:
                 - Path=/api/skills/**,/api/categories/**
+            - id: proposal-service
+              uri: ${proposal-url}
+              predicates:
+                - Path=/api/proposals/**,/api/projects/*/proposals
             - id: marketplace-service
               uri: ${marketplace-url}
               predicates:
-                - Path=/api/projects/**,/api/proposals/**,/api/bookmarks/**
+                - Path=/api/projects/**,/api/bookmarks/**
             - id: contract-service
               uri: ${contract-url}
               predicates:

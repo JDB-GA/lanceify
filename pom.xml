@@ -13,5 +13,6 @@
 		<module>contract-service</module>
 		<module>communication-service</module>
 		<module>catalog-service</module>
+		<module>proposal-service</module>
 	</modules>
 </project>
