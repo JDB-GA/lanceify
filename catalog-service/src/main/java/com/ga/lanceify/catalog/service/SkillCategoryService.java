@@ -30,10 +30,6 @@ public class SkillCategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    // ==========================================
-    // SKILLS
-    // ==========================================
-
     public List<SkillResponse> getActiveSkills(String categoryId) {
         List<Skill> skills;
         if (categoryId != null && !categoryId.isBlank()) {
@@ -84,10 +80,6 @@ public class SkillCategoryService {
         skill.setActive(false);
         skillRepository.save(skill);
     }
-
-    // ==========================================
-    // CATEGORIES
-    // ==========================================
 
     public List<CategoryResponse> getActiveCategories() {
         return categoryRepository.findAllByActiveTrue()
@@ -169,10 +161,6 @@ public class SkillCategoryService {
         Category updated = categoryRepository.save(category);
         return toCategoryResponse(updated);
     }
-
-    // ==========================================
-    // MAPPERS
-    // ==========================================
 
     private SkillResponse toSkillResponse(Skill skill) {
         return new SkillResponse(skill.getId(), skill.getName(), skill.isActive());

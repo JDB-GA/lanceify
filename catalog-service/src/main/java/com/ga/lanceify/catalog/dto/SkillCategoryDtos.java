@@ -6,7 +6,6 @@ public final class SkillCategoryDtos {
 
     private SkillCategoryDtos() {}
 
-    // Request Records
     public record CreateSkillRequest(String name) {}
 
     public record UpdateSkillRequest(String name) {}
@@ -19,7 +18,6 @@ public final class SkillCategoryDtos {
 
     public record UpdateFreelancerSkillsRequest(List<String> skillIds) {}
 
-    // Response Records
     public record SkillResponse(String id, String name, boolean active) {}
 
     public record CategoryResponse(

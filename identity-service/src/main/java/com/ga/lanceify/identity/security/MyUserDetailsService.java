@@ -18,9 +18,6 @@ public class MyUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
     }
 
-    /**
-     * Tokens store the user id, so the JWT filter looks users up by id.
-     */
     public MyUserDetails loadUserById(String id) throws UsernameNotFoundException {
         return userRepository.findById(id)
                 .map(MyUserDetails::new)

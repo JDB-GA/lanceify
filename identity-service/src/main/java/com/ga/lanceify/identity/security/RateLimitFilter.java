@@ -15,9 +15,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Limits login and register attempts per IP to slow down password guessing.
- */
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
@@ -34,7 +31,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private Bucket getBucket(String key, int capacity, Duration duration) {
         return buckets.computeIfAbsent(key, k -> createBucket(capacity, duration));
     }
-
 
     private String clientIp(HttpServletRequest request) {
         String forwarded = request.getHeader("X-Forwarded-For");

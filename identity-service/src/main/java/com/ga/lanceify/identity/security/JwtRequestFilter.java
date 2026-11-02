@@ -13,7 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
@@ -41,7 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 String userId = jwtUtils.getUserIdFromJwtToken(jwt);
                 MyUserDetails userDetails = myUserDetailsService.loadUserById(userId);
-                // banned users are rejected even if their token has not expired yet
+
                 if (userDetails.isEnabled()) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userId, null, userDetails.getAuthorities());
