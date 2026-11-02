@@ -98,6 +98,6 @@ public class ProjectController {
     }
 
     private String getUserId(Authentication auth) {
-        return (String) auth.getDetails();
+        return auth.getName();
     }
 }

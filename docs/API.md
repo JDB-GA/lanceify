@@ -116,6 +116,20 @@ Post body:
 }
 ```
 
+## Projects
+
+| Method | Path | Access | Purpose |
+| --- | --- | --- | --- |
+| POST | `/api/projects` | Client | Post a project |
+| GET | `/api/projects` | Logged in | Browse open projects; filter with `categoryId`, `skillIds` |
+| GET | `/api/projects/my` | Client | List my projects |
+| GET | `/api/projects/assigned` | Freelancer | List projects I was hired for |
+| GET | `/api/projects/{id}` | Logged in | View a project |
+| PUT | `/api/projects/{id}` | Client | Edit my open project |
+| PATCH | `/api/projects/{id}/status` | Client | Change my project's status |
+| PATCH | `/api/projects/{id}/assign/{freelancerId}` | Client | Hire a freelancer |
+| DELETE | `/api/projects/{id}` | Client or admin | Delete a project |
+
 ## Proposals
 
 | Method | Path                                 | Access     | Purpose                                                        |
