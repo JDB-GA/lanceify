@@ -47,6 +47,12 @@ Run each command in its own terminal, from the repository root. To work on one f
 ./mvnw -pl marketplace-service spring-boot:run
 ```
 
+**Proposal service**
+
+```bash
+./mvnw -pl proposal-service spring-boot:run
+```
+
 **Contract service**
 
 ```bash
