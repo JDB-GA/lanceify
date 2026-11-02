@@ -4,7 +4,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      IDENTITY_SERVICE_URL: http://identity-service:8081
+      IDENTITY_SERVICE_URL: http://identity-service:8085
       MARKETPLACE_SERVICE_URL: http://marketplace-service:8082
       CONTRACT_SERVICE_URL: http://contract-service:8083
       COMMUNICATION_SERVICE_URL: http://communication-service:8084

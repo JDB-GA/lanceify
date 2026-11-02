@@ -37,7 +37,6 @@ public class SecurityConfiguration {
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/api/auth/**", "/error").permitAll()
                         .anyRequest().authenticated())
-                // created here, not as a bean, so Spring does not register the filter twice
                 .addFilterBefore(new JwtRequestFilter(jwtUtils, myUserDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
         return http.build();

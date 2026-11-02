@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.ga.lanceify.identity.dto.AuthResponse;
 import com.ga.lanceify.identity.dto.LoginRequest;
+import com.ga.lanceify.identity.dto.MessageResponse;
 import com.ga.lanceify.identity.dto.RegisterRequest;
 import com.ga.lanceify.identity.exception.AccountBannedException;
 import com.ga.lanceify.identity.exception.ConflictException;
@@ -29,7 +30,7 @@ public class AuthService {
 		this.jwtUtils = jwtUtils;
 	}
 
-	public AuthResponse register(RegisterRequest request) {
+	public MessageResponse register(RegisterRequest request) {
 		if (request.role() == User.Role.ADMIN) {
 			throw new InvalidApplicationException("Cannot register as ADMIN");
 		}
@@ -41,14 +42,15 @@ public class AuthService {
 			throw new ConflictException("Username is already taken");
 		}
 		User user = User.builder()
-				.fullName(request.fullName())
+				.firstName(request.firstName())
+				.lastName(request.lastName())
 				.username(request.username())
 				.email(email)
 				.password(passwordEncoder.encode(request.password()))
 				.role(request.role())
 				.build();
-		user = userRepository.save(user);
-		return AuthResponse.from(jwtUtils.generateJwtToken(user), user);
+		userRepository.save(user);
+		return new MessageResponse("Registered successfully. Please log in.");
 	}
 
 	public AuthResponse login(LoginRequest request) {

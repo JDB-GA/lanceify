@@ -13,15 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * Filter that checks incoming requests for a JWT.
- *
- * If a valid JWT is found and the user still exists and is not banned,
- * the user is authenticated and stored in the SecurityContext.
- * The principal name is the user id, so JwtCurrentUserProvider can read it.
- *
- * Not a @Component on purpose: Spring would register it twice.
- */
+
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
