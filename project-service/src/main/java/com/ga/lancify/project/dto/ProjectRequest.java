@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -26,5 +27,11 @@ public class ProjectRequest {
     @NotNull(message = "Deadline is required")
     @Future(message = "Deadline must be in the future")
     private LocalDate deadline;
+
+    @NotBlank(message = "Category is required")
+    private String categoryId;
+
+    @NotEmpty(message = "At least one skill is required")
+    private List<String> requiredSkillIds;
 
 }
