@@ -168,6 +168,30 @@ Post body:
 | Messages saved out of order | `lastMessage` only moves forward in time, using an atomic update |
 | Two registrations with the same email | Unique index; the second gets 409 with the right message |
 
+## Contracts
+
+A contract is created automatically when a client accepts a proposal, or an admin approves one. The project is assigned to the freelancer at the same time, and the other pending proposals are rejected.
+
+| Method | Path | Access | Purpose |
+| --- | --- | --- | --- |
+| GET | `/api/contracts/my` | Client or freelancer | List my contracts |
+| GET | `/api/contracts/{id}` | Participant or admin | View a contract |
+| PUT | `/api/contracts/{id}/complete` | Client | Complete a contract and its project |
+| PUT | `/api/contracts/{id}/cancel` | Client or admin | Cancel a contract and its project |
+| GET | `/api/admin/contracts` | Admin | List all contracts |
+
+A freelancer can have at most 3 active contracts. A project can have at most 5 active proposals; withdrawn and rejected ones don't count. Only approved freelancers can send proposals.
+
+## Administration
+
+| Method | Path | Access | Purpose |
+| --- | --- | --- | --- |
+| PUT | `/api/proposals/{id}/accept` | Client | Accept a proposal on my project |
+| PUT | `/api/admin/proposals/{id}/approve` | Admin | Approve any pending proposal |
+| GET | `/api/admin/users` | Admin | List users |
+| PUT | `/api/admin/users/{id}/ban` | Admin | Ban a user |
+| PUT | `/api/admin/users/{id}/unban` | Admin | Unban a user |
+
 ## Status codes
 
 | Code | Meaning                                                            |

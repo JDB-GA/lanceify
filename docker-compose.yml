@@ -63,3 +63,12 @@ services:
     env_file: .env
     environment:
       CATALOG_SERVICE_URL: http://catalog-service:8085
+
+  seed-service:
+    build: ./seed-service
+    env_file: .env
+    environment:
+      SEED_RESET: ${SEED_RESET:-false}
+    restart: "no"
+    depends_on:
+      - catalog-service
