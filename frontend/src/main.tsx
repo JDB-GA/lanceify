@@ -5,6 +5,7 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { RealtimeProvider } from './context/RealtimeContext';
 import { ToastProvider } from './context/ToastContext';
+import { ConfirmProvider } from './context/ConfirmContext';
 import './styles.css';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
@@ -12,9 +13,11 @@ createRoot(document.getElementById('root') as HTMLElement).render(
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
-          <RealtimeProvider>
-            <App />
-          </RealtimeProvider>
+          <ConfirmProvider>
+            <RealtimeProvider>
+              <App />
+            </RealtimeProvider>
+          </ConfirmProvider>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -3,9 +3,18 @@ import { ApiError } from '../api/client';
 import { catalogApi } from '../api/catalog';
 import EmptyState from '../components/EmptyState';
 import Icon from '../components/Icon';
+import { useConfirm } from '../context/ConfirmContext';
 import { useToast } from '../context/ToastContext';
 import { useLoad } from '../hooks/useLoad';
 import type { Category, Skill } from '../types';
+
+function useConfirmRemove() {
+  const confirm = useConfirm();
+  return async (name: string, action: () => void) => {
+    const confirmed = await confirm({ title: `Remove “${name}”?`, confirmLabel: 'Remove', danger: true });
+    if (confirmed) action();
+  };
+}
 
 export default function AdminCatalogPage() {
   const { notify } = useToast();
@@ -60,6 +69,7 @@ export default function AdminCatalogPage() {
 type Act = (action: () => Promise<unknown>, success: string) => Promise<boolean>;
 
 function SkillsPanel({ skills, loading, busy, act }: { skills: Skill[]; loading: boolean; busy: boolean; act: Act }) {
+  const confirmRemove = useConfirmRemove();
   const [name, setName] = useState('');
   const [editing, setEditing] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -100,7 +110,7 @@ function SkillsPanel({ skills, loading, busy, act }: { skills: Skill[]; loading:
                     className="icon-button danger"
                     aria-label={`Remove ${skill.name}`}
                     disabled={busy}
-                    onClick={() => window.confirm(`Remove “${skill.name}”?`) && act(() => catalogApi.deactivateSkill(skill.id), 'Skill removed')}
+                    onClick={() => confirmRemove(skill.name, () => act(() => catalogApi.deactivateSkill(skill.id), 'Skill removed'))}
                   >
                     <Icon name="trash" size={16} />
                   </button>
@@ -124,6 +134,7 @@ interface CategoriesProps {
 }
 
 function CategoriesPanel({ categories, skills, skillNames, loading, busy, act }: CategoriesProps) {
+  const confirmRemove = useConfirmRemove();
   const [draft, setDraft] = useState({ name: '', description: '', skillIds: [] as string[] });
   const [editing, setEditing] = useState<Category | null>(null);
   const [edit, setEdit] = useState({ name: '', description: '', skillIds: [] as string[] });
@@ -207,7 +218,7 @@ function CategoriesPanel({ categories, skills, skillNames, loading, busy, act }:
                     className="icon-button danger"
                     aria-label={`Remove ${category.name}`}
                     disabled={busy}
-                    onClick={() => window.confirm(`Remove “${category.name}”?`) && act(() => catalogApi.deactivateCategory(category.id), 'Category removed')}
+                    onClick={() => confirmRemove(category.name, () => act(() => catalogApi.deactivateCategory(category.id), 'Category removed'))}
                   >
                     <Icon name="trash" size={16} />
                   </button>
