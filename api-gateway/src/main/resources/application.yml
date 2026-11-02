@@ -5,6 +5,7 @@ identity-url: ${IDENTITY_SERVICE_URL:http://localhost:8081}
 marketplace-url: ${MARKETPLACE_SERVICE_URL:http://localhost:8082}
 contract-url: ${CONTRACT_SERVICE_URL:http://localhost:8083}
 communication-url: ${COMMUNICATION_SERVICE_URL:http://localhost:8084}
+catalog-url: ${CATALOG_SERVICE_URL:http://localhost:8085}
 
 spring:
   application:
@@ -18,10 +19,14 @@ spring:
               uri: ${identity-url}
               predicates:
                 - Path=/api/auth/**,/api/users/**,/api/freelancers/**,/api/admin/freelancer-applications/**
+            - id: catalog-service
+              uri: ${catalog-url}
+              predicates:
+                - Path=/api/skills/**,/api/categories/**
             - id: marketplace-service
               uri: ${marketplace-url}
               predicates:
-                - Path=/api/skills/**,/api/categories/**,/api/projects/**,/api/proposals/**,/api/bookmarks/**
+                - Path=/api/projects/**,/api/proposals/**,/api/bookmarks/**
             - id: contract-service
               uri: ${contract-url}
               predicates:
