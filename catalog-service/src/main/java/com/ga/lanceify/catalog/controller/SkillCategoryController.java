@@ -10,6 +10,7 @@ import com.ga.lanceify.catalog.dto.SkillCategoryDtos.UpdateSkillRequest;
 import com.ga.lanceify.catalog.service.SkillCategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class SkillCategoryController {
     }
 
     // POST /api/skills (Admin)
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/skills")
     public ResponseEntity<SkillResponse> createSkill(
             @RequestBody CreateSkillRequest request) {
@@ -45,6 +47,7 @@ public class SkillCategoryController {
     }
 
     // PUT /api/skills/{id} (Admin)
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/skills/{id}")
     public ResponseEntity<SkillResponse> updateSkill(
             @PathVariable String id,
@@ -54,6 +57,7 @@ public class SkillCategoryController {
     }
 
     // DELETE /api/skills/{id} (Admin - Soft Deactivation)
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/skills/{id}")
     public ResponseEntity<Void> deactivateSkill(@PathVariable String id) {
         skillCategoryService.deactivateSkill(id);
@@ -72,6 +76,7 @@ public class SkillCategoryController {
     }
 
     // POST /api/categories (Admin)
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/categories")
     public ResponseEntity<CategoryResponse> createCategory(
             @RequestBody CreateCategoryRequest request) {
@@ -80,6 +85,7 @@ public class SkillCategoryController {
     }
 
     // PUT /api/categories/{id} (Admin)
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/categories/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(
             @PathVariable String id,
@@ -89,6 +95,7 @@ public class SkillCategoryController {
     }
 
     // DELETE /api/categories/{id} (Admin - Soft Deactivation)
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/categories/{id}")
     public ResponseEntity<Void> deactivateCategory(@PathVariable String id) {
         skillCategoryService.deactivateCategory(id);
@@ -96,6 +103,7 @@ public class SkillCategoryController {
     }
 
     // PUT /api/categories/{id}/skills (Admin - Replace Skills Assigned to Category)
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/categories/{id}/skills")
     public ResponseEntity<CategoryResponse> replaceCategorySkills(
             @PathVariable String id,

@@ -1,10 +1,17 @@
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+
   api-gateway:
     build: ./api-gateway
     ports:
       - "8080:8080"
     environment:
-      IDENTITY_SERVICE_URL: http://identity-service:8085
+      IDENTITY_SERVICE_URL: http://identity-service:8081
       MARKETPLACE_SERVICE_URL: http://marketplace-service:8082
       CONTRACT_SERVICE_URL: http://contract-service:8083
       COMMUNICATION_SERVICE_URL: http://communication-service:8084
