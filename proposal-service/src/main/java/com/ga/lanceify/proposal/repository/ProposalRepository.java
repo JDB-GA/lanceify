@@ -17,6 +17,8 @@ public interface ProposalRepository extends MongoRepository<Proposal, String> {
 
     boolean existsByProjectIdAndFreelancerId(String projectId, String freelancerId);
 
+    long countByProjectIdAndStatusIn(String projectId, List<ProposalStatus> statuses);
+
     boolean existsByProjectIdAndStatus(String projectId, ProposalStatus status);
 
 }

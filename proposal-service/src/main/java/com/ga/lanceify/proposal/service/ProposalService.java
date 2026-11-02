@@ -2,6 +2,9 @@ package com.ga.lanceify.proposal.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,9 +25,14 @@ import com.ga.lanceify.proposal.repository.ProposalRepository;
 @Service
 public class ProposalService {
 
+    public static final int MAX_PROPOSALS_PER_PROJECT = 5;
+
+    private static final List<ProposalStatus> ACTIVE_STATUSES = List.of(ProposalStatus.PENDING, ProposalStatus.ACCEPTED);
+
     private final ProposalRepository proposalRepository;
     private final ProjectClient projectClient;
     private final MongoTemplate mongoTemplate;
+    private final Map<String, ReentrantLock> projectLocks = new ConcurrentHashMap<>();
 
     public ProposalService(ProposalRepository proposalRepository, ProjectClient projectClient,
             MongoTemplate mongoTemplate) {
@@ -41,9 +49,6 @@ public class ProposalService {
         if (freelancerId.equals(project.getClientId())) {
             throw new ConflictException("You cannot apply to your own project");
         }
-        if (proposalRepository.existsByProjectIdAndFreelancerId(projectId, freelancerId)) {
-            throw new ConflictException("You have already applied to this project");
-        }
 
         Proposal proposal = new Proposal();
         proposal.setProjectId(projectId);
@@ -54,7 +59,22 @@ public class ProposalService {
         proposal.setBidAmount(request.getBidAmount());
         proposal.setDeliveryDays(request.getDeliveryDays());
         proposal.setStatus(ProposalStatus.PENDING);
-        return proposalRepository.insert(proposal);
+
+        ReentrantLock lock = projectLocks.computeIfAbsent(projectId, id -> new ReentrantLock());
+        lock.lock();
+        try {
+            if (proposalRepository.existsByProjectIdAndFreelancerId(projectId, freelancerId)) {
+                throw new ConflictException("You have already applied to this project");
+            }
+            long active = proposalRepository.countByProjectIdAndStatusIn(projectId, ACTIVE_STATUSES);
+            if (active >= MAX_PROPOSALS_PER_PROJECT) {
+                throw new ConflictException("This project already has the maximum of "
+                        + MAX_PROPOSALS_PER_PROJECT + " proposals");
+            }
+            return proposalRepository.insert(proposal);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public List<Proposal> myProposals(String freelancerId) {
