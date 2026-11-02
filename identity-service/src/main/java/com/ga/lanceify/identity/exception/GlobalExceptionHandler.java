@@ -38,6 +38,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
 	}
 
+	@ExceptionHandler(AccountBannedException.class)
+	public ProblemDetail handleBanned(AccountBannedException ex) {
+		return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+	}
+
 	@ExceptionHandler(DuplicateKeyException.class)
 	public ProblemDetail handleDuplicateKey(DuplicateKeyException ex) {
 		return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Freelancer profile already exists");
